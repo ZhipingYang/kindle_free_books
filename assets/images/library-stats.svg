@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 324" width="100%" height="100%">
+  <style>
+    .bg { fill: #0f172a; stroke: #334155; stroke-width: 1px; }
+    .card { fill: #1e293b; stroke: #334155; stroke-width: 1px; rx: 10px; }
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 16px; font-weight: 700; fill: #f8fafc; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; fill: #64748b; }
+    .stat-label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; font-size: 11px; fill: #94a3b8; }
+    .stat-value { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 22px; font-weight: 700; fill: #f8fafc; }
+    .stat-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; font-size: 10px; fill: #64748b; }
+    .cat-name { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; font-size: 12px; font-weight: 600; fill: #cbd5e1; }
+    .cat-count { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 11px; font-weight: 600; fill: #94a3b8; }
+    .cat-pct { fill: #64748b; font-weight: 400; font-size: 10px; }
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #ffffff; stroke: #e2e8f0; }
+      .card { fill: #f8fafc; stroke: #e2e8f0; }
+      .title { fill: #0f172a; }
+      .stat-value { fill: #0f172a; }
+      .stat-label { fill: #475569; }
+      .cat-name { fill: #1e293b; }
+      .cat-count { fill: #475569; }
+    }
+  </style>
+
+  <!-- Background -->
+  <rect width="880" height="324" rx="16" class="bg" />
+
+  <!-- Header -->
+  <g transform="translate(40, 36)">
+    <text class="title">📚 云端开放书架 · 馆藏全景数据</text>
+    <text x="800" y="0" text-anchor="end" class="subtitle">更新时间: 2026-09-09</text>
+  </g>
+
+  <!-- 4 Top Cards -->
+  <!-- Card 1: Total Books -->
+  <g transform="translate(40, 56)">
+    <rect width="188" height="96" rx="8" class="card" />
+    <text x="14" y="26" class="stat-label">全库资源文件</text>
+    <text x="14" y="58" class="stat-value">842</text>
+    <text x="14" y="80" class="stat-sub">MOBI:650 EPUB:115 TXT:77</text>
+  </g>
+
+  <!-- Card 2: Unique Works -->
+  <g transform="translate(244, 56)">
+    <rect width="188" height="96" rx="8" class="card" />
+    <text x="14" y="26" class="stat-label">聚合独立作品</text>
+    <text x="14" y="58" class="stat-value">744 <tspan font-size="14" font-weight="400" fill="#94a3b8">部</tspan></text>
+    <text x="14" y="80" class="stat-sub">跨格式聚合去重</text>
+  </g>
+
+  <!-- Card 3: Total Size -->
+  <g transform="translate(448, 56)">
+    <rect width="188" height="96" rx="8" class="card" />
+    <text x="14" y="26" class="stat-label">藏书总容量</text>
+    <text x="14" y="58" class="stat-value">1.97 GB</text>
+    <text x="14" y="80" class="stat-sub">纯净可缩放流式排版</text>
+  </g>
+
+  <!-- Card 4: Categories -->
+  <g transform="translate(652, 56)">
+    <rect width="188" height="96" rx="8" class="card" />
+    <text x="14" y="26" class="stat-label">馆藏细分门类</text>
+    <text x="14" y="58" class="stat-value">10 <tspan font-size="14" font-weight="400" fill="#94a3b8">大类</tspan></text>
+    <text x="14" y="80" class="stat-sub">正史/文学/经管/科技/通俗</text>
+  </g>
+
+  <!-- Stacked Distribution Bar -->
+  <g>
+    <rect x="40.0" y="180" width="239.4" height="12" fill="#3b82f6" rx="2" /><rect x="279.4" y="180" width="169.1" height="12" fill="#10b981" rx="2" /><rect x="448.5" y="180" width="84.6" height="12" fill="#f59e0b" rx="2" /><rect x="533.1" y="180" width="73.2" height="12" fill="#8b5cf6" rx="2" /><rect x="606.3000000000001" y="180" width="63.7" height="12" fill="#ec4899" rx="2" /><rect x="670.0000000000001" y="180" width="58.0" height="12" fill="#06b6d4" rx="2" /><rect x="728.0000000000001" y="180" width="39.9" height="12" fill="#d97706" rx="2" /><rect x="767.9000000000001" y="180" width="36.1" height="12" fill="#14b8a6" rx="2" /><rect x="804.0000000000001" y="180" width="23.8" height="12" fill="#e11d48" rx="2" /><rect x="827.8000000000001" y="180" width="12.4" height="12" fill="#6366f1" rx="2" />
+  </g>
+
+  <!-- Category Legend -->
+  <g>
+    <g transform="translate(40, 225)">
+      <circle cx="6" cy="6" r="5" fill="#3b82f6" />
+      <text x="16" y="9" class="cat-name">外国文学</text>
+      <text x="16" y="24" class="cat-count">252 本 <tspan class="cat-pct">(29.9%)</tspan></text>
+    </g>
+    <g transform="translate(200, 225)">
+      <circle cx="6" cy="6" r="5" fill="#10b981" />
+      <text x="16" y="9" class="cat-name">现代文学</text>
+      <text x="16" y="24" class="cat-count">178 本 <tspan class="cat-pct">(21.1%)</tspan></text>
+    </g>
+    <g transform="translate(360, 225)">
+      <circle cx="6" cy="6" r="5" fill="#f59e0b" />
+      <text x="16" y="9" class="cat-name">历史人文</text>
+      <text x="16" y="24" class="cat-count">89 本 <tspan class="cat-pct">(10.6%)</tspan></text>
+    </g>
+    <g transform="translate(520, 225)">
+      <circle cx="6" cy="6" r="5" fill="#8b5cf6" />
+      <text x="16" y="9" class="cat-name">网络小说</text>
+      <text x="16" y="24" class="cat-count">77 本 <tspan class="cat-pct">(9.1%)</tspan></text>
+    </g>
+    <g transform="translate(680, 225)">
+      <circle cx="6" cy="6" r="5" fill="#ec4899" />
+      <text x="16" y="9" class="cat-name">天天向上</text>
+      <text x="16" y="24" class="cat-count">67 本 <tspan class="cat-pct">(8.0%)</tspan></text>
+    </g>
+    <g transform="translate(40, 267)">
+      <circle cx="6" cy="6" r="5" fill="#06b6d4" />
+      <text x="16" y="9" class="cat-name">百家讲坛</text>
+      <text x="16" y="24" class="cat-count">61 本 <tspan class="cat-pct">(7.2%)</tspan></text>
+    </g>
+    <g transform="translate(200, 267)">
+      <circle cx="6" cy="6" r="5" fill="#d97706" />
+      <text x="16" y="9" class="cat-name">古典文学</text>
+      <text x="16" y="24" class="cat-count">42 本 <tspan class="cat-pct">(5.0%)</tspan></text>
+    </g>
+    <g transform="translate(360, 267)">
+      <circle cx="6" cy="6" r="5" fill="#14b8a6" />
+      <text x="16" y="9" class="cat-name">学习资料</text>
+      <text x="16" y="24" class="cat-count">38 本 <tspan class="cat-pct">(4.5%)</tspan></text>
+    </g>
+    <g transform="translate(520, 267)">
+      <circle cx="6" cy="6" r="5" fill="#e11d48" />
+      <text x="16" y="9" class="cat-name">二十四史</text>
+      <text x="16" y="24" class="cat-count">25 本 <tspan class="cat-pct">(3.0%)</tspan></text>
+    </g>
+    <g transform="translate(680, 267)">
+      <circle cx="6" cy="6" r="5" fill="#6366f1" />
+      <text x="16" y="9" class="cat-name">哲学宗教</text>
+      <text x="16" y="24" class="cat-count">13 本 <tspan class="cat-pct">(1.5%)</tspan></text>
+    </g>
+  </g>
+</svg>

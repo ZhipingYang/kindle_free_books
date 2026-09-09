@@ -74,6 +74,10 @@
 
 ## 🗂 馆藏门类分布统计
 
+<p align="center">
+  <img src="assets/images/library-stats.svg" alt="馆藏全景数据" width="100%">
+</p>
+
 全库现收录 **842 个资源文件**，聚合为 **744 部独立作品**（MOBI: 650 个, EPUB: 115 个, TXT: 77 个），总数据体积约 **1.97 GB**：
 
 | 分类门类 | 收录规模 | 格式分布 | 代表作品 / 作者 |
