@@ -1,8 +1,8 @@
 {
-  "totalBooks": 816,
+  "totalBooks": 815,
   "uniqueWorks": 726,
-  "totalSize": 2002069847,
-  "totalSizeFormatted": "1.86 GB",
+  "totalSize": 1983305399,
+  "totalSizeFormatted": "1.85 GB",
   "categories": {
     "二十四史": 25,
     "历史人文": 90,
@@ -13,12 +13,12 @@
     "学习资料": 34,
     "现代文学": 156,
     "百家讲坛": 61,
-    "网络小说": 79
+    "网络小说": 78
   },
   "formats": {
     "mobi": 643,
     "epub": 115,
-    "txt": 58
+    "txt": 57
   },
   "popularTags": [
     {
@@ -55,11 +55,11 @@
     },
     {
       "tag": "流行小说",
-      "count": 79
+      "count": 78
     },
     {
       "tag": "网络畅销",
-      "count": 79
+      "count": 78
     },
     {
       "tag": "名家讲坛",
@@ -142,5 +142,5 @@
       "count": 14
     }
   ],
-  "updatedAt": "2026-09-09 15:45:15"
+  "updatedAt": "2026-09-09 15:46:55"
 }

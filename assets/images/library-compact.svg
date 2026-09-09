@@ -12,7 +12,7 @@
   <rect width="880" height="110" rx="12" class="bg" />
   <g transform="translate(40, 24)">
     <text class="unit-title">📚 全库资源文件</text>
-    <text y="36" class="unit-val">816 <tspan font-size="13" font-weight="400" fill="#94a3b8">本</tspan></text>
+    <text y="36" class="unit-val">815 <tspan font-size="13" font-weight="400" fill="#94a3b8">本</tspan></text>
   </g>
   <g transform="translate(260, 24)">
     <text class="unit-title">📖 聚合独立作品</text>
@@ -20,13 +20,13 @@
   </g>
   <g transform="translate(480, 24)">
     <text class="unit-title">💾 馆藏纯净总容量</text>
-    <text y="36" class="unit-val">1.86 GB</text>
+    <text y="36" class="unit-val">1.85 GB</text>
   </g>
   <g transform="translate(700, 24)">
     <text class="unit-title">🗂 精选细分门类</text>
     <text y="36" class="unit-val">10 <tspan font-size="13" font-weight="400" fill="#94a3b8">大类</tspan></text>
   </g>
   <g>
-    <rect x="40.0" y="92" width="251.0" height="6" fill="#3b82f6" rx="1" /><rect x="291.0" y="92" width="152.9" height="6" fill="#10b981" rx="1" /><rect x="443.9" y="92" width="88.2" height="6" fill="#f59e0b" rx="1" /><rect x="532.1" y="92" width="77.5" height="6" fill="#8b5cf6" rx="1" /><rect x="609.6" y="92" width="59.8" height="6" fill="#ec4899" rx="1" /><rect x="669.4" y="92" width="57.8" height="6" fill="#06b6d4" rx="1" /><rect x="727.1999999999999" y="92" width="41.2" height="6" fill="#d97706" rx="1" /><rect x="768.4" y="92" width="33.3" height="6" fill="#14b8a6" rx="1" /><rect x="801.6999999999999" y="92" width="24.5" height="6" fill="#e11d48" rx="1" /><rect x="826.1999999999999" y="92" width="13.7" height="6" fill="#6366f1" rx="1" />
+    <rect x="40.0" y="92" width="251.3" height="6" fill="#3b82f6" rx="1" /><rect x="291.3" y="92" width="153.1" height="6" fill="#10b981" rx="1" /><rect x="444.4" y="92" width="88.3" height="6" fill="#f59e0b" rx="1" /><rect x="532.6999999999999" y="92" width="76.6" height="6" fill="#8b5cf6" rx="1" /><rect x="609.3" y="92" width="59.9" height="6" fill="#ec4899" rx="1" /><rect x="669.1999999999999" y="92" width="57.9" height="6" fill="#06b6d4" rx="1" /><rect x="727.0999999999999" y="92" width="41.2" height="6" fill="#d97706" rx="1" /><rect x="768.3" y="92" width="33.4" height="6" fill="#14b8a6" rx="1" /><rect x="801.6999999999999" y="92" width="24.5" height="6" fill="#e11d48" rx="1" /><rect x="826.1999999999999" y="92" width="13.7" height="6" fill="#6366f1" rx="1" />
   </g>
 </svg>

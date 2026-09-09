@@ -35,8 +35,8 @@
   <g transform="translate(40, 56)">
     <rect width="188" height="96" rx="8" class="card" />
     <text x="14" y="26" class="stat-label">全库资源文件</text>
-    <text x="14" y="58" class="stat-value">816</text>
-    <text x="14" y="80" class="stat-sub">MOBI:643 EPUB:115 TXT:58</text>
+    <text x="14" y="58" class="stat-value">815</text>
+    <text x="14" y="80" class="stat-sub">MOBI:643 EPUB:115 TXT:57</text>
   </g>
 
   <!-- Card 2: Unique Works -->
@@ -51,7 +51,7 @@
   <g transform="translate(448, 56)">
     <rect width="188" height="96" rx="8" class="card" />
     <text x="14" y="26" class="stat-label">藏书总容量</text>
-    <text x="14" y="58" class="stat-value">1.86 GB</text>
+    <text x="14" y="58" class="stat-value">1.85 GB</text>
     <text x="14" y="80" class="stat-sub">纯净可缩放流式排版</text>
   </g>
 
@@ -65,7 +65,7 @@
 
   <!-- Stacked Distribution Bar -->
   <g>
-    <rect x="40.0" y="180" width="251.0" height="12" fill="#3b82f6" rx="2" /><rect x="291.0" y="180" width="152.9" height="12" fill="#10b981" rx="2" /><rect x="443.9" y="180" width="88.2" height="12" fill="#f59e0b" rx="2" /><rect x="532.1" y="180" width="77.5" height="12" fill="#8b5cf6" rx="2" /><rect x="609.6" y="180" width="59.8" height="12" fill="#ec4899" rx="2" /><rect x="669.4" y="180" width="57.8" height="12" fill="#06b6d4" rx="2" /><rect x="727.1999999999999" y="180" width="41.2" height="12" fill="#d97706" rx="2" /><rect x="768.4" y="180" width="33.3" height="12" fill="#14b8a6" rx="2" /><rect x="801.6999999999999" y="180" width="24.5" height="12" fill="#e11d48" rx="2" /><rect x="826.1999999999999" y="180" width="13.7" height="12" fill="#6366f1" rx="2" />
+    <rect x="40.0" y="180" width="251.3" height="12" fill="#3b82f6" rx="2" /><rect x="291.3" y="180" width="153.1" height="12" fill="#10b981" rx="2" /><rect x="444.4" y="180" width="88.3" height="12" fill="#f59e0b" rx="2" /><rect x="532.6999999999999" y="180" width="76.6" height="12" fill="#8b5cf6" rx="2" /><rect x="609.3" y="180" width="59.9" height="12" fill="#ec4899" rx="2" /><rect x="669.1999999999999" y="180" width="57.9" height="12" fill="#06b6d4" rx="2" /><rect x="727.0999999999999" y="180" width="41.2" height="12" fill="#d97706" rx="2" /><rect x="768.3" y="180" width="33.4" height="12" fill="#14b8a6" rx="2" /><rect x="801.6999999999999" y="180" width="24.5" height="12" fill="#e11d48" rx="2" /><rect x="826.1999999999999" y="180" width="13.7" height="12" fill="#6366f1" rx="2" />
   </g>
 
   <!-- Category Legend -->
@@ -88,7 +88,7 @@
     <g transform="translate(520, 225)">
       <circle cx="6" cy="6" r="5" fill="#8b5cf6" />
       <text x="16" y="9" class="cat-name">网络小说</text>
-      <text x="16" y="24" class="cat-count">79 本 <tspan class="cat-pct">(9.7%)</tspan></text>
+      <text x="16" y="24" class="cat-count">78 本 <tspan class="cat-pct">(9.6%)</tspan></text>
     </g>
     <g transform="translate(680, 225)">
       <circle cx="6" cy="6" r="5" fill="#ec4899" />
@@ -103,7 +103,7 @@
     <g transform="translate(200, 267)">
       <circle cx="6" cy="6" r="5" fill="#d97706" />
       <text x="16" y="9" class="cat-name">古典文学</text>
-      <text x="16" y="24" class="cat-count">42 本 <tspan class="cat-pct">(5.1%)</tspan></text>
+      <text x="16" y="24" class="cat-count">42 本 <tspan class="cat-pct">(5.2%)</tspan></text>
     </g>
     <g transform="translate(360, 267)">
       <circle cx="6" cy="6" r="5" fill="#14b8a6" />
