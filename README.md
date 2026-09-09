@@ -8,8 +8,8 @@
   精心整理的经典中文与世界名著免费数字典藏 · 100% 纯净重排格式 · 剔除一切扫描件与杂质文件
 </p>
 
-[![Books](https://img.shields.io/badge/全库资源-761%20本-2563eb?style=flat-square&logo=gitbook&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
-[![Works](https://img.shields.io/badge/独立作品-710%20部-059669?style=flat-square&logo=bookmeter&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
+[![Books](https://img.shields.io/badge/全库资源-754%20本-2563eb?style=flat-square&logo=gitbook&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
+[![Works](https://img.shields.io/badge/独立作品-703%20部-059669?style=flat-square&logo=bookmeter&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
 [![Format](https://img.shields.io/badge/格式-MOBI%20%7C%20EPUB%20%7C%20TXT-d97706?style=flat-square)](https://zhipingyang.github.io/open-cloud-bookshelf/)
 [![Reader](https://img.shields.io/badge/在线阅读-免插件纯前端-7c3aed?style=flat-square&logo=safari&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
 [![Offline](https://img.shields.io/badge/离线缓存-IndexedDB-0891b2?style=flat-square&logo=pwa&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
@@ -62,7 +62,7 @@
 <td width="50%" valign="top">
 
 ### 📚 100% 纯净流式重排典藏
-- **761 本优质馆藏**：涵盖正史典籍、武侠江湖、外国名著、现代文学、名家演讲、高分网络文学等 10 大门类。
+- **754 本优质馆藏**：涵盖正史典籍、武侠江湖、外国名著、现代文学、名家演讲、殿堂级网络文学等 10 大门类。
 - **零扫描件杂质**：全部书籍均为可缩放流式排版，剔除失效的 `.chm`、`.exe`、不安全附件及臃肿扫描版 PDF。
 - **严格规范化审计**：自动化管道验证命名规范（`书名 - 作者.格式`）、正文首章交叉比对与去噪去水印。
 
@@ -74,14 +74,14 @@
 
 ## 🗂 馆藏门类分布统计
 
-全库现收录 **761 个资源文件**，聚合为 **710 部独立作品**（MOBI: 611 个, EPUB: 78 个, TXT: 72 个），总数据体积约 **1.83 GB**：
+全库现收录 **754 个资源文件**，聚合为 **703 部独立作品**（MOBI: 611 个, EPUB: 78 个, TXT: 65 个），总数据体积约 **1.69 GB**：
 
 | 分类门类 | 收录规模 | 格式分布 | 代表作品 / 作者 |
 | :--- | :---: | :---: | :--- |
 | **外国文学** | **235 本** | MOBI / EPUB / TXT | 东野圭吾全集（《白夜行》《嫌疑人X》）、阿加莎·克里斯蒂探案集、《百年孤独》、《追风筝的人》、《挪威的森林》等 |
 | **现代文学** | **149 本** | MOBI | 亦舒文集（80余部）、金庸武侠全集、古龙作品集、梁羽生系列、鲁迅、沈从文、王小波等 |
 | **历史人文** | **82 本** | MOBI / EPUB | 《万历十五年》、《中国大历史》、《中国历史通俗演义》、《剑桥中国史》全系列、历史通识与名家传记 |
-| **网络小说** | **74 本** | MOBI / EPUB / TXT | 《全职高手》、《魔道祖师》、《放开那个女巫》、《十日终焉》、《赤心巡天》、《诡秘之主》、《玄鉴仙族》、《斩神》、《长夜君主》、《一级律师》等 |
+| **网络小说** | **67 本** | MOBI / EPUB / TXT | 《仙逆》、《雪中悍刀行》、《诡秘之主》、《择天记》、《莽荒纪》、《万相之王》、《灵境行者》、《深空彼岸》、《黄昏分界》、《全职高手》、《魔道祖师》、《俗人回档》、《赤心巡天》、《玄鉴仙族》、《斩神》等 |
 | **百家讲坛** | **61 本** | MOBI / EPUB | 易中天品三国/先秦诸子、阎崇年清十二帝、刘心武谈红楼、金正昆谈礼仪、王立群读史记等名家演讲实录 |
 | **天天向上** | **48 本** | MOBI | 《金字塔原理》、《把时间当朋友》、《天才在左疯子在右》、《怪诞行为学》、《富爸爸穷爸爸》等思维成长经典 |
 | **古典文学** | **42 本** | MOBI / EPUB | 《四大名著》、《全宋词》、《唐诗三百首》、《乐府诗集》、《四书五经》、《资治通鉴》（文白对照与柏杨版）等 |
