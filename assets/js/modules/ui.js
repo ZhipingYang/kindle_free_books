@@ -300,12 +300,27 @@
     return FORMAT_PRIORITY[(fmt || '').toLowerCase()] || 0;
   }
 
+  function normalizeTitle(title) {
+    if (!title) return '';
+    return String(title)
+      .replace(/[（\(][^）\)]*?(全集|插图版|含图版|文字版|全\d+册|第\d+卷|完美全集|新订版)[^）\)]*?[）\)]/gi, '')
+      .replace(/[\s\-_:：·\.]+/g, '')
+      .toLowerCase();
+  }
+
+  function normalizeAuthor(author) {
+    if (!author || author === '佚名') return '';
+    return String(author)
+      .replace(/[\s\-_:：·\.]+/g, '')
+      .toLowerCase();
+  }
+
   function groupBooks(rawList) {
     if (!Array.isArray(rawList)) return [];
     const map = new Map();
     for (const b of rawList) {
-      const titleNorm = (b.title || '').trim().toLowerCase();
-      const authorNorm = (b.author || '').trim().toLowerCase();
+      const titleNorm = normalizeTitle(b.title || '');
+      const authorNorm = normalizeAuthor(b.author || '');
       const key = `${titleNorm}::${authorNorm}`;
 
       const fmtEntry = {

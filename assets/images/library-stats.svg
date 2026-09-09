@@ -35,15 +35,15 @@
   <g transform="translate(40, 56)">
     <rect width="188" height="96" rx="8" class="card" />
     <text x="14" y="26" class="stat-label">全库资源文件</text>
-    <text x="14" y="58" class="stat-value">842</text>
-    <text x="14" y="80" class="stat-sub">MOBI:650 EPUB:115 TXT:77</text>
+    <text x="14" y="58" class="stat-value">815</text>
+    <text x="14" y="80" class="stat-sub">MOBI:643 EPUB:115 TXT:57</text>
   </g>
 
   <!-- Card 2: Unique Works -->
   <g transform="translate(244, 56)">
     <rect width="188" height="96" rx="8" class="card" />
     <text x="14" y="26" class="stat-label">聚合独立作品</text>
-    <text x="14" y="58" class="stat-value">744 <tspan font-size="14" font-weight="400" fill="#94a3b8">部</tspan></text>
+    <text x="14" y="58" class="stat-value">726 <tspan font-size="14" font-weight="400" fill="#94a3b8">部</tspan></text>
     <text x="14" y="80" class="stat-sub">跨格式聚合去重</text>
   </g>
 
@@ -51,7 +51,7 @@
   <g transform="translate(448, 56)">
     <rect width="188" height="96" rx="8" class="card" />
     <text x="14" y="26" class="stat-label">藏书总容量</text>
-    <text x="14" y="58" class="stat-value">1.97 GB</text>
+    <text x="14" y="58" class="stat-value">1.85 GB</text>
     <text x="14" y="80" class="stat-sub">纯净可缩放流式排版</text>
   </g>
 
@@ -65,7 +65,7 @@
 
   <!-- Stacked Distribution Bar -->
   <g>
-    <rect x="40.0" y="180" width="239.4" height="12" fill="#3b82f6" rx="2" /><rect x="279.4" y="180" width="169.1" height="12" fill="#10b981" rx="2" /><rect x="448.5" y="180" width="84.6" height="12" fill="#f59e0b" rx="2" /><rect x="533.1" y="180" width="73.2" height="12" fill="#8b5cf6" rx="2" /><rect x="606.3000000000001" y="180" width="63.7" height="12" fill="#ec4899" rx="2" /><rect x="670.0000000000001" y="180" width="58.0" height="12" fill="#06b6d4" rx="2" /><rect x="728.0000000000001" y="180" width="39.9" height="12" fill="#d97706" rx="2" /><rect x="767.9000000000001" y="180" width="36.1" height="12" fill="#14b8a6" rx="2" /><rect x="804.0000000000001" y="180" width="23.8" height="12" fill="#e11d48" rx="2" /><rect x="827.8000000000001" y="180" width="12.4" height="12" fill="#6366f1" rx="2" />
+    <rect x="40.0" y="180" width="251.3" height="12" fill="#3b82f6" rx="2" /><rect x="291.3" y="180" width="153.1" height="12" fill="#10b981" rx="2" /><rect x="444.4" y="180" width="88.3" height="12" fill="#f59e0b" rx="2" /><rect x="532.6999999999999" y="180" width="76.6" height="12" fill="#8b5cf6" rx="2" /><rect x="609.3" y="180" width="59.9" height="12" fill="#ec4899" rx="2" /><rect x="669.1999999999999" y="180" width="57.9" height="12" fill="#06b6d4" rx="2" /><rect x="727.0999999999999" y="180" width="41.2" height="12" fill="#d97706" rx="2" /><rect x="768.3" y="180" width="33.4" height="12" fill="#14b8a6" rx="2" /><rect x="801.6999999999999" y="180" width="24.5" height="12" fill="#e11d48" rx="2" /><rect x="826.1999999999999" y="180" width="13.7" height="12" fill="#6366f1" rx="2" />
   </g>
 
   <!-- Category Legend -->
@@ -73,52 +73,52 @@
     <g transform="translate(40, 225)">
       <circle cx="6" cy="6" r="5" fill="#3b82f6" />
       <text x="16" y="9" class="cat-name">外国文学</text>
-      <text x="16" y="24" class="cat-count">252 本 <tspan class="cat-pct">(29.9%)</tspan></text>
+      <text x="16" y="24" class="cat-count">256 本 <tspan class="cat-pct">(31.4%)</tspan></text>
     </g>
     <g transform="translate(200, 225)">
       <circle cx="6" cy="6" r="5" fill="#10b981" />
       <text x="16" y="9" class="cat-name">现代文学</text>
-      <text x="16" y="24" class="cat-count">178 本 <tspan class="cat-pct">(21.1%)</tspan></text>
+      <text x="16" y="24" class="cat-count">156 本 <tspan class="cat-pct">(19.1%)</tspan></text>
     </g>
     <g transform="translate(360, 225)">
       <circle cx="6" cy="6" r="5" fill="#f59e0b" />
       <text x="16" y="9" class="cat-name">历史人文</text>
-      <text x="16" y="24" class="cat-count">89 本 <tspan class="cat-pct">(10.6%)</tspan></text>
+      <text x="16" y="24" class="cat-count">90 本 <tspan class="cat-pct">(11.0%)</tspan></text>
     </g>
     <g transform="translate(520, 225)">
       <circle cx="6" cy="6" r="5" fill="#8b5cf6" />
       <text x="16" y="9" class="cat-name">网络小说</text>
-      <text x="16" y="24" class="cat-count">77 本 <tspan class="cat-pct">(9.1%)</tspan></text>
+      <text x="16" y="24" class="cat-count">78 本 <tspan class="cat-pct">(9.6%)</tspan></text>
     </g>
     <g transform="translate(680, 225)">
       <circle cx="6" cy="6" r="5" fill="#ec4899" />
-      <text x="16" y="9" class="cat-name">天天向上</text>
-      <text x="16" y="24" class="cat-count">67 本 <tspan class="cat-pct">(8.0%)</tspan></text>
+      <text x="16" y="9" class="cat-name">百家讲坛</text>
+      <text x="16" y="24" class="cat-count">61 本 <tspan class="cat-pct">(7.5%)</tspan></text>
     </g>
     <g transform="translate(40, 267)">
       <circle cx="6" cy="6" r="5" fill="#06b6d4" />
-      <text x="16" y="9" class="cat-name">百家讲坛</text>
-      <text x="16" y="24" class="cat-count">61 本 <tspan class="cat-pct">(7.2%)</tspan></text>
+      <text x="16" y="9" class="cat-name">天天向上</text>
+      <text x="16" y="24" class="cat-count">59 本 <tspan class="cat-pct">(7.2%)</tspan></text>
     </g>
     <g transform="translate(200, 267)">
       <circle cx="6" cy="6" r="5" fill="#d97706" />
       <text x="16" y="9" class="cat-name">古典文学</text>
-      <text x="16" y="24" class="cat-count">42 本 <tspan class="cat-pct">(5.0%)</tspan></text>
+      <text x="16" y="24" class="cat-count">42 本 <tspan class="cat-pct">(5.2%)</tspan></text>
     </g>
     <g transform="translate(360, 267)">
       <circle cx="6" cy="6" r="5" fill="#14b8a6" />
       <text x="16" y="9" class="cat-name">学习资料</text>
-      <text x="16" y="24" class="cat-count">38 本 <tspan class="cat-pct">(4.5%)</tspan></text>
+      <text x="16" y="24" class="cat-count">34 本 <tspan class="cat-pct">(4.2%)</tspan></text>
     </g>
     <g transform="translate(520, 267)">
       <circle cx="6" cy="6" r="5" fill="#e11d48" />
       <text x="16" y="9" class="cat-name">二十四史</text>
-      <text x="16" y="24" class="cat-count">25 本 <tspan class="cat-pct">(3.0%)</tspan></text>
+      <text x="16" y="24" class="cat-count">25 本 <tspan class="cat-pct">(3.1%)</tspan></text>
     </g>
     <g transform="translate(680, 267)">
       <circle cx="6" cy="6" r="5" fill="#6366f1" />
       <text x="16" y="9" class="cat-name">哲学宗教</text>
-      <text x="16" y="24" class="cat-count">13 本 <tspan class="cat-pct">(1.5%)</tspan></text>
+      <text x="16" y="24" class="cat-count">14 本 <tspan class="cat-pct">(1.7%)</tspan></text>
     </g>
   </g>
 </svg>

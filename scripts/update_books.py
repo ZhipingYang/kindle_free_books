@@ -328,7 +328,7 @@ def parse_txt(path):
     try:
         with open(path, 'rb') as f:
             raw = f.read(4096)
-            for enc in ['utf-8', 'gb18030', 'gbk', 'big5']:
+            for enc in ['utf-8', 'utf-16', 'utf-16le', 'gb18030', 'gbk', 'big5']:
                 try:
                     text = raw.decode(enc)
                     meta['excerpt'] = clean_text_excerpt(text, 300)
@@ -362,22 +362,34 @@ def clean_title_and_author(filename_no_ext, category, sub_dir, parsed_meta):
                 break
         return f"百家讲坛：{topic}", author
 
-    # 二十四史
+    # 二十四史: match longer keys first to prevent '汉书' from prematurely matching '后汉书'
     if category == '二十四史':
         clean_hist = re.sub(r'^[0-9]{2}', '', name).strip()
-        for hist_key, hist_author in TWENTY_FOUR_HISTORIES.items():
+        for hist_key in sorted(TWENTY_FOUR_HISTORIES.keys(), key=len, reverse=True):
             if hist_key in clean_hist:
-                return hist_key, hist_author
+                return hist_key, TWENTY_FOUR_HISTORIES[hist_key]
 
     # Remove country brackets like [日], [美]
     name = re.sub(r'^\[[^\]]+\]', '', name).strip()
     name = re.sub(r'^[【\[（\(]([^】\]）\)]+)[】\]）\)]', '', name).strip()
 
+    # If filename has explicit ' - ' separator, extract title and author directly
+    explicit_title = ''
+    explicit_author = ''
+    if ' - ' in name:
+        parts = name.rsplit(' - ', 1)
+        c_title = parts[0].strip()
+        c_author = parts[1].strip()
+        # Avoid treating series volume markers as author
+        if not re.search(r'^(全集|完整|精校|上卷|下卷|第[0-9一二三四五六七八九十]+[卷册部]|全[0-9一二三四五六七八九十]+册)$', c_author):
+            explicit_title = c_title
+            explicit_author = c_author
+
     book_title_match = re.search(r'《([^》]+)》', name)
     extracted_book_title = book_title_match.group(1).strip() if book_title_match else ''
 
-    author = ''
-    if sub_dir in KNOWN_SUBDIR_AUTHORS:
+    author = explicit_author
+    if not author and sub_dir in KNOWN_SUBDIR_AUTHORS:
         author = KNOWN_SUBDIR_AUTHORS[sub_dir]
 
     for bk, auth in FAMOUS_AUTHORS_MAP.items():
@@ -393,26 +405,30 @@ def clean_title_and_author(filename_no_ext, category, sub_dir, parsed_meta):
             if clean_pa and not any(w in clean_pa for w in ['出版社', '文库', '书友', 'txt', 'mobi', 'epub']):
                 author = clean_pa
 
-    # Pattern: 书名 - 作者
-    if author:
-        pat = r'[\-—_]\s*' + re.escape(author) + r'$'
-        name = re.sub(pat, '', name).strip()
+    if explicit_title:
+        title = explicit_title
+    elif extracted_book_title:
+        title = extracted_book_title
+    else:
+        # Pattern: 书名 - 作者 fallback
+        if author:
+            pat = r'[\-—_]\s*' + re.escape(author) + r'$'
+            name = re.sub(pat, '', name).strip()
 
-    m_dash = re.search(r'[\-—_]\s*([^\s\-—_()（）\[\]]+)$', name)
-    if m_dash:
-        cand = m_dash.group(1).strip()
-        is_valid_author = (1 < len(cand) <= 8 or (len(cand) <= 20 and '·' in cand)) and (
-            not cand.isdigit() and not any(w in cand for w in ['全集', '完整', '精校', '上卷', '下卷', '册', '版'])
-        )
-        if is_valid_author or (author and cand == author):
-            if not author: author = cand
+        m_dash = re.search(r'[\-—_]\s*([^\-—_()（）\[\]]+)$', name)
+        if m_dash:
+            cand = m_dash.group(1).strip()
+            if not author:
+                author = cand
             name = name[:m_dash.start()].strip()
 
-    title = extracted_book_title if extracted_book_title else name.replace('《', '').replace('》', '').strip()
+        title = name.replace('《', '').replace('》', '').strip()
+
     title = re.sub(r'实体书精校版', '', title).strip()
     title = re.sub(r'三联版\d*', '', title).strip()
     title = re.sub(r'全十册\d*', '', title).strip()
 
+    author = re.sub(r'^(著|编|译|作者|撰)[:：]?', '', author).strip()
     author = author.replace('《', '').replace('》', '').replace('[', '').replace(']', '').replace('/', '、').replace('\\', '、').strip()
     return title.strip(), author.strip()
 
