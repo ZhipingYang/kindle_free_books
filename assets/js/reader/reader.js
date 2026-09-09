@@ -44,8 +44,20 @@ class ReaderApp {
     this.cacheDom();
     if (!this.dom.readerOverlay) return;
     this.isStandalone = document.body.classList.contains('reader-standalone');
+    this.bindVisualViewport();
     this.bindEvents();
     this.applySettings(this.settings);
+  }
+
+  bindVisualViewport() {
+    const updateVisibleHeight = () => {
+      const viewportHeight = window.visualViewport?.height || window.innerHeight;
+      document.documentElement.style.setProperty('--reader-visible-height', `${Math.round(viewportHeight)}px`);
+    };
+
+    updateVisibleHeight();
+    window.visualViewport?.addEventListener('resize', updateVisibleHeight, { passive: true });
+    window.addEventListener('orientationchange', updateVisibleHeight, { passive: true });
   }
 
   cacheDom() {
@@ -1144,4 +1156,3 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 })();
-
