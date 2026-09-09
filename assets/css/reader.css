@@ -962,6 +962,40 @@ body.reader-active {
 
 /* Mobile Adjustments */
 @media (max-width: 640px) {
+  /* Let iOS Safari observe the root-page scroll so its browser chrome can
+     collapse. Embedded/desktop readers keep their isolated scroll area. */
+  html.reader-standalone-page {
+    height: auto !important;
+    min-height: 100%;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+  body.reader-standalone {
+    position: static !important;
+    inset: auto !important;
+    display: block;
+    width: 100%;
+    height: auto !important;
+    min-height: 100dvh;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+  }
+  body.reader-standalone #reader-overlay {
+    position: static;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  body.reader-standalone #reader-content-area {
+    flex: none;
+    width: 100%;
+    min-height: 100dvh;
+    overflow: visible;
+    overscroll-behavior-y: auto;
+  }
+
   #reader-top-bar {
     height: auto;
     min-height: 2.85rem;

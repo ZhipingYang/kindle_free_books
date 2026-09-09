@@ -10,6 +10,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
   <script>
     (function() {
+      document.documentElement.classList.add('reader-standalone-page');
       try {
         var s = JSON.parse(localStorage.getItem('kfb_reader_settings') || '{}');
         var colors = { paper: '#fcfbfa', sepia: '#f6eedb', dark: '#1c1c22', black: '#000000' };
@@ -24,7 +25,7 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="assets/css/reader.css?v=20260909">
+  <link rel="stylesheet" href="assets/css/reader.css?v=20260909b">
   <style>
     /* Standalone page body reset */
     html, body {
@@ -253,7 +254,7 @@
   <script src="assets/js/reader/parser.js"></script>
   <script src="assets/js/modules/store.js"></script>
   <script src="assets/js/modules/ui.js?v=20260909b"></script>
-  <script src="assets/js/reader/reader.js"></script>
+  <script src="assets/js/reader/reader.js?v=20260909b"></script>
   <script src="assets/js/pages/reader.js?v=20260909"></script>
 </body>
 </html>

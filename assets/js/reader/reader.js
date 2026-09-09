@@ -102,6 +102,38 @@ class ReaderApp {
     };
   }
 
+  usesDocumentScroll() {
+    return this.isStandalone && window.matchMedia('(max-width: 640px)').matches;
+  }
+
+  getScrollMetrics() {
+    if (this.usesDocumentScroll()) {
+      const root = document.documentElement;
+      const body = document.body;
+      const scrollTop = window.scrollY || root.scrollTop || body.scrollTop || 0;
+      const fullHeight = Math.max(root.scrollHeight, body.scrollHeight);
+      return {
+        scrollTop,
+        scrollRange: Math.max(0, fullHeight - window.innerHeight)
+      };
+    }
+
+    if (!this.dom.contentArea) return { scrollTop: 0, scrollRange: 0 };
+    return {
+      scrollTop: this.dom.contentArea.scrollTop,
+      scrollRange: Math.max(0, this.dom.contentArea.scrollHeight - this.dom.contentArea.clientHeight)
+    };
+  }
+
+  scrollContentTo(top, behavior = 'auto') {
+    const target = Math.max(0, top || 0);
+    if (this.usesDocumentScroll()) {
+      window.scrollTo({ top: target, behavior });
+    } else if (this.dom.contentArea) {
+      this.dom.contentArea.scrollTo({ top: target, behavior });
+    }
+  }
+
   bindEvents() {
     // Exit
     this.dom.exitBtn.addEventListener('click', () => {
@@ -316,8 +348,8 @@ class ReaderApp {
     // Scroll progress save with debounce + scroll direction auto-hide on mobile
     let scrollTimer = null;
     let lastScrollTop = 0;
-    this.dom.contentArea.addEventListener('scroll', () => {
-      const st = this.dom.contentArea.scrollTop;
+    const handleContentScroll = () => {
+      const st = this.getScrollMetrics().scrollTop;
       const diff = st - lastScrollTop;
 
       // Auto dismiss undo chip if reader scrolls reading content
@@ -346,7 +378,9 @@ class ReaderApp {
 
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(() => this.saveScrollPosition(), 150);
-    }, { passive: true });
+    };
+    this.dom.contentArea.addEventListener('scroll', handleContentScroll, { passive: true });
+    window.addEventListener('scroll', handleContentScroll, { passive: true });
 
 
     // Settings Controls
@@ -718,11 +752,11 @@ class ReaderApp {
     // Scroll positioning
     if (scrollPercent > 0) {
       setTimeout(() => {
-        const targetScrollTop = (this.dom.contentArea.scrollHeight - this.dom.contentArea.clientHeight) * scrollPercent;
-        this.dom.contentArea.scrollTo({ top: targetScrollTop, behavior: 'auto' });
+        const targetScrollTop = this.getScrollMetrics().scrollRange * scrollPercent;
+        this.scrollContentTo(targetScrollTop);
       }, 50);
     } else {
-      this.dom.contentArea.scrollTo({ top: 0, behavior: 'auto' });
+      this.scrollContentTo(0);
     }
 
     // URL sync in standalone mode
@@ -761,13 +795,13 @@ class ReaderApp {
   getReadingPositionSnapshot() {
     if (!this.parsedBook || !this.parsedBook.chapters) return null;
     const chap = this.parsedBook.chapters[this.currentChapterIndex];
-    const scrollHeight = this.dom.contentArea ? (this.dom.contentArea.scrollHeight - this.dom.contentArea.clientHeight) : 0;
-    const scrollPercent = scrollHeight > 0 ? (this.dom.contentArea.scrollTop / scrollHeight) : 0;
+    const metrics = this.getScrollMetrics();
+    const scrollPercent = metrics.scrollRange > 0 ? (metrics.scrollTop / metrics.scrollRange) : 0;
     return {
       index: this.currentChapterIndex,
       title: chap ? chap.title : `第 ${this.currentChapterIndex + 1} 节`,
       scrollPercent: scrollPercent,
-      scrollTop: this.dom.contentArea ? this.dom.contentArea.scrollTop : 0
+      scrollTop: metrics.scrollTop
     };
   }
 
@@ -802,7 +836,7 @@ class ReaderApp {
     if (this.dom.undoText) {
       this.dom.undoText.textContent = `${cleanTitle || `第 ${origin.index + 1} 节`}${pctStr}`;
     }
-    this.undoInitialScrollTop = this.dom.contentArea ? this.dom.contentArea.scrollTop : 0;
+    this.undoInitialScrollTop = this.getScrollMetrics().scrollTop;
     this.dom.undoChip.classList.add('visible');
     clearTimeout(this.undoTimer);
     this.undoTimer = setTimeout(() => {
@@ -819,8 +853,8 @@ class ReaderApp {
 
   saveScrollPosition() {
     if (!this.currentBook || !this.parsedBook) return;
-    const scrollHeight = this.dom.contentArea.scrollHeight - this.dom.contentArea.clientHeight;
-    const scrollPercent = scrollHeight > 0 ? (this.dom.contentArea.scrollTop / scrollHeight) : 0;
+    const metrics = this.getScrollMetrics();
+    const scrollPercent = metrics.scrollRange > 0 ? (metrics.scrollTop / metrics.scrollRange) : 0;
     this.saveProgress(scrollPercent);
   }
 
@@ -1110,5 +1144,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 })();
-
 
