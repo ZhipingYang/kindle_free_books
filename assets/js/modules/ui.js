@@ -105,6 +105,56 @@
   }
 
   /**
+   * On phones, release the full viewport while reading the catalog: the
+   * single-row site header follows the same direction as Safari's chrome.
+   */
+  function initMobileHeader() {
+    const header = document.querySelector('.navbar');
+    if (!header || header.dataset.mobileScrollReady === 'true') return;
+
+    const mobileQuery = window.matchMedia('(max-width: 640px)');
+    let lastY = Math.max(0, window.scrollY);
+    let ticking = false;
+
+    const update = () => {
+      const currentY = Math.max(0, window.scrollY);
+      const delta = currentY - lastY;
+
+      if (!mobileQuery.matches || currentY < 24) {
+        header.classList.remove('is-hidden');
+      } else if (delta > 6 && currentY > 96) {
+        header.classList.add('is-hidden');
+      } else if (delta < -6) {
+        header.classList.remove('is-hidden');
+      }
+
+      lastY = currentY;
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    };
+
+    const onViewportChange = () => {
+      lastY = Math.max(0, window.scrollY);
+      if (!mobileQuery.matches) header.classList.remove('is-hidden');
+    };
+
+    header.dataset.mobileScrollReady = 'true';
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onViewportChange, { passive: true });
+    if (mobileQuery.addEventListener) {
+      mobileQuery.addEventListener('change', onViewportChange);
+    } else {
+      mobileQuery.addListener(onViewportChange);
+    }
+  }
+
+  /**
    * Render single book card HTML (Grid or List mode)
    */
   function renderBookCard(book, options = {}) {
@@ -471,6 +521,7 @@
     formatTimeAgo,
     getPalette,
     initTheme,
+    initMobileHeader,
     renderBookCard,
     renderDrawerContent,
     FORMAT_PRIORITY,
@@ -482,4 +533,3 @@
   window.escapeHtml = escapeHtml;
   window.showToast = showToast;
 })();
-

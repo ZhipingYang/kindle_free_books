@@ -93,6 +93,7 @@
 
   async function init() {
     BookUI.initTheme(dom.themeToggleBtn);
+    BookUI.initMobileHeader();
     setupEvents();
 
     // Check custom books

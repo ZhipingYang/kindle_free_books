@@ -54,6 +54,7 @@
 
   async function init() {
     BookUI.initTheme(dom.themeToggleBtn);
+    BookUI.initMobileHeader();
     setupEvents();
 
     // Check URL query param for default tab: e.g. ?tab=history

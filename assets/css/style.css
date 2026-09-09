@@ -91,6 +91,7 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   background-color: rgba(255, 255, 255, 0.88);
+  transition: transform 0.24s var(--ease), box-shadow 0.2s ease;
 }
 [data-theme="dark"] .navbar {
   background-color: rgba(17, 24, 39, 0.88);
@@ -156,6 +157,10 @@ body {
   gap: 0.5rem;
   flex-shrink: 0;
   order: 3;
+}
+
+.btn-icon.mobile-nav-shortcut {
+  display: none;
 }
 
 .btn-icon {
@@ -1264,6 +1269,28 @@ body {
 }
 
 @media (max-width: 640px) {
+  .navbar {
+    padding: max(0.35rem, env(safe-area-inset-top)) 0 0.35rem;
+    will-change: transform;
+  }
+  .navbar.is-hidden {
+    transform: translateY(calc(-100% - env(safe-area-inset-top)));
+    pointer-events: none;
+  }
+  .navbar-inner {
+    flex-direction: row;
+    gap: 0;
+  }
+  .navbar-top-row {
+    gap: 0.5rem;
+  }
+  .navbar .nav-links {
+    display: none;
+  }
+  .btn-icon.mobile-nav-shortcut {
+    display: inline-flex;
+  }
+
   .container {
     padding: 0 0.75rem;
   }
@@ -1551,6 +1578,18 @@ body {
     height: 4px;
     background: var(--border-strong);
     border-radius: 9999px;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-tools a[aria-label="GitHub Repository"] {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar {
+    transition: none;
   }
 }
 
