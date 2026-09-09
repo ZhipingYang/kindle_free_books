@@ -31,46 +31,12 @@
 
 ---
 
-## ⚡ 核心功能与特色
+## ✨ 核心特性
 
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### 📖 纯前端免插件轻量阅读引擎
-- **纯原生零依赖**：浏览器纯 JS 解析 **MOBI**（PalmDOC LZ77 流式解压）、**EPUB**（JSZip 目录重构）与 **TXT**（智能分章排版）。
-- **专属直达链接**：支持 `reader.html?id=<bookId>&chapter=<chapterNum>`，方便书签收藏与多端分享。
-- **专业版式与护眼定制**：内置羊皮纸、护眼暖黄、暗灰、纯黑 4 套主题，3 款国风排版字体，字号行宽随心调节。
-
-</td>
-<td width="50%" valign="top">
-
-### 💾 独立书房与 IndexedDB 离线持久化
-- **全本离线缓存**：依托现代 IndexedDB，点击离线缓存即可把书籍存入本地，高铁、飞机断网秒开秒读。
-- **自动进度断点续读**：精确记忆章节序号与阅读百分比，换天或重启浏览器均可一秒回溯。
-- **本地私人藏书导入**：支持拖拽外部 `.epub` / `.mobi` / `.txt` 文件存入私人浏览器书房进行阅读。
-
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
-
-### 📱 移动端与交互体验极致调优
-- **动态视口防抖动**：深度适配移动端 Safari/Chrome 动态地址栏缩放（`100dvh`），无双重滚动条与回弹跳跃。
-- **沉浸式感知浮动栏**：向下滚动阅读自动滑出隐藏顶部/底部栏，上滑轻触温润唤出，100% 净空留给内容。
-- **流畅手势翻页**：支持单指左右滑动手势翻页（Touch Swipe），底部预留安全区防遮挡。
-
-</td>
-<td width="50%" valign="top">
-
-### 📚 100% 纯净流式重排典藏
-- **全格式优质馆藏**：涵盖正史典籍、武侠江湖、外国名著、现代文学、名家演讲、殿堂级网络文学等 10 大门类，典藏规模持续扩充。
-- **零扫描件杂质**：全部书籍均为可缩放流式排版，剔除失效的 `.chm`、`.exe`、不安全附件及臃肿扫描版 PDF。
-- **严格规范化审计**：自动化管道验证命名规范（`书名 - 作者.格式`）、正文首章交叉比对与去噪去水印。
-
-</td>
-</tr>
-</table>
+- **📖 纯前端免插件阅读**：纯原生 JS 实时解码 MOBI（PalmDOC LZ77 流式解压）、EPUB（JSZip 重构）与 TXT，零后端依赖，支持链接直达指定章节。
+- **💾 离线书房与断点续读**：依托 IndexedDB 实现全本离线存储与阅读进度毫秒级记忆，断网即开即读，支持本地电子书拖拽导入。
+- **📱 移动端沉浸交互体验**：适配移动端视口（`100dvh`）与触控滑动手势，阅读时智能自动隐藏浮动栏，内置 4 套国风护眼排版主题。
+- **📚 100% 纯净流式重排典藏**：全流式可调字号排版，彻底剔除扫描版及杂质附件，由自动化脚本与 CI 进行命名及数据规范化审计。
 
 ---
 
@@ -121,6 +87,29 @@
 
 ---
 
+## 🏛 系统架构与数据流向
+
+项目采用**构建期静态清单生成**与**运行期客户端免插件渲染**的双层架构，零后端服务依赖：
+
+```mermaid
+flowchart LR
+  subgraph Build["📁 构建期：元数据解析与资产生成"]
+    direction TB
+    Books["books/ 电子书库<br>(EPUB / MOBI / TXT)"] --> Scanner["scripts/update_books.py<br>(元数据提取 & 格式聚合)"]
+    Scanner --> Catalog["books.json & meta.json<br>(静态图书总目索引)"]
+    Scanner --> Badges["assets/badges/ & images/<br>(自适应徽标与 SVG 看板)"]
+  end
+
+  subgraph Browser["🌐 运行期：纯前端免插件阅读引擎"]
+    direction TB
+    Catalog -.->|异步 Fetch 请求| UI["index.html / library.js<br>(藏书阁检索 & 分类筛选)"]
+    UI --> Reader["reader.html / reader.js<br>(PalmDOC / JSZip 纯前端解析)"]
+    Reader <--> IDB[("IndexedDB 本地存储<br>(全本离线缓存 & 阅读进度)")]
+  end
+```
+
+---
+
 ## 🛠 本地开发与维护
 
 本项目为纯静态架构，零构建打包成本，开箱即用：
@@ -139,6 +128,27 @@ make catalog
 
 # 4. 提交前进行自动化审计校验 (命名规范、单文件50MB限制、格式完整性)
 make check
+```
+
+### 🔄 书籍新增与 CI 自动化流水线
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor Dev as 维护者 / 贡献者
+  participant Disk as 本地图书库 (books/)
+  participant Script as 索引构建 (update_books.py)
+  participant Catalog as 静态索引 (books.json)
+  participant CI as 门禁审计 (audit_library.py / CI)
+
+  Dev->>Disk: 1. 放入规范电子书 (格式: 书名 - 作者.扩展名)
+  Dev->>Script: 2. 执行 make catalog (增量更新)
+  Script->>Disk: 增量扫描并提取新增/变更书籍元数据
+  Script->>Catalog: 自动同步写入 books.json 及自适应 SVG 资产
+  Dev->>CI: 3. 执行 make check (本地预检)
+  CI-->>Dev: 检查文件命名规范、内容去重、单文件 < 50MB
+  Dev->>Dev: 4. Git 提交代码与资产 (git push)
+  CI-->>Dev: 5. GitHub Actions 自动化门禁验证通过
 ```
 
 > [!TIP]
