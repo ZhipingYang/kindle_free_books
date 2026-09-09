@@ -4,6 +4,13 @@ on:
   pull_request:
   push:
     branches: [master]
+    paths-ignore:
+      - 'README.md'
+      - 'CATALOG.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '*.md'
 
 jobs:
   library:

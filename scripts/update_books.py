@@ -19,6 +19,7 @@ import time
 import struct
 import hashlib
 import zipfile
+import urllib.parse
 from pathlib import Path
 from collections import defaultdict
 
@@ -26,6 +27,7 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 BOOKS_DIR = os.path.join(REPO_ROOT, 'books')
 CATALOG_PATH = os.path.join(REPO_ROOT, 'books.json')
 META_PATH = os.path.join(REPO_ROOT, 'meta.json')
+CATALOG_MD_PATH = os.path.join(REPO_ROOT, 'CATALOG.md')
 BADGES_DIR = os.path.join(REPO_ROOT, 'assets', 'badges')
 IMAGES_DIR = os.path.join(REPO_ROOT, 'assets', 'images')
 STATS_SVG_PATH = os.path.join(IMAGES_DIR, 'library-stats.svg')
@@ -743,6 +745,108 @@ def generate_stats_svg_content(catalog, date_str=None) -> str:
     return svg
 
 
+CATEGORY_DISPLAY_ORDER = [
+    '二十四史', '古典文学', '现代文学', '外国文学', '历史人文',
+    '网络小说', '百家讲坛', '天天向上', '学习资料', '哲学宗教'
+]
+
+
+def generate_catalog_markdown(catalog: dict) -> str:
+    """Generate a clean, searchable, collapsible CATALOG.md for GitHub visitors."""
+    meta = catalog.get('meta', {})
+    books = catalog.get('books', [])
+
+    total_books = meta.get('totalBooks', len(books))
+    unique_works = meta.get('uniqueWorks', len(set(b['title'] for b in books)))
+    total_size = meta.get('totalSizeFormatted', '')
+
+    cat_works = defaultdict(lambda: defaultdict(list))
+    cat_files = defaultdict(int)
+
+    for b in books:
+        cat = b.get('category', '未分类')
+        title = b.get('title', '未知作品')
+        author = b.get('author', '佚名')
+        key = (title, author)
+        cat_works[cat][key].append(b)
+        cat_files[cat] += 1
+
+    all_cats = list(cat_works.keys())
+    sorted_cats = [c for c in CATEGORY_DISPLAY_ORDER if c in all_cats]
+    remaining_cats = sorted([c for c in all_cats if c not in CATEGORY_DISPLAY_ORDER])
+    categories = sorted_cats + remaining_cats
+
+    lines = [
+        "# 📖 云端开放书架 · 馆藏图书总目清单 (Full Catalog)",
+        "",
+        "> **本总目由自动化流水线（`scripts/update_books.py`）根据 `books/` 目录全量提取并实时编目。**  ",
+        f"> 典藏收录全部 **{unique_works} 部作品**（共 **{total_books} 个数字典藏文件**，全库总容量 **{total_size}**）。  ",
+        "> ",
+        "> 💡 **检索技巧**：各大分类门类默认折叠收纳。在当前页面按下键盘快捷键 <kbd>Ctrl</kbd> + <kbd>F</kbd>（Mac 下为 <kbd>Cmd</kbd> + <kbd>F</kbd>）输入书名或作者，**现代浏览器会自动展开对应分类并高亮匹配项**。点击文件格式可直接在 GitHub 下载对应文件，点击“在线阅读”可免插件直达原生阅读器。",
+        "",
+        "[![返回主页](https://img.shields.io/badge/🏠_返回主页-README-2563eb?style=flat-square)](README.md)",
+        "[![在线藏书阁](https://img.shields.io/badge/🌐_在线阅读-Web_Reader-059669?style=flat-square)](https://zhipingyang.github.io/open-cloud-bookshelf/)",
+        "[![我的书房](https://img.shields.io/badge/⭐_我的书房-Bookshelf-7c3aed?style=flat-square)](https://zhipingyang.github.io/open-cloud-bookshelf/bookshelf.html)",
+        "",
+        "---",
+        "",
+        "## 🧭 快速直达分类门类",
+        ""
+    ]
+
+    nav_links = [f"[{cat}](#{cat}) ({len(cat_works[cat])}部)" for cat in categories]
+    lines.append(" · ".join(nav_links))
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+
+    for cat in categories:
+        works = cat_works[cat]
+        works_count = len(works)
+        files_count = cat_files[cat]
+
+        lines.append(f"### 📚 {cat}")
+        lines.append("")
+        lines.append("<details>")
+        lines.append(f"<summary><b>👉 点击展开：{cat}（共 {works_count} 部作品 · {files_count} 个文件）</b></summary>")
+        lines.append("")
+        lines.append("| 作品名 | 著者 / 编者 | 格式下载 (GitHub) | 在线阅读 (Web Reader) |")
+        lines.append("| :--- | :--- | :--- | :---: |")
+
+        sorted_keys = sorted(works.keys(), key=lambda k: k[0])
+        for title, author in sorted_keys:
+            items = works[(title, author)]
+            safe_title = title.replace('|', '\\|')
+            safe_author = (author if author else '佚名').replace('|', '\\|')
+
+            fmt_order = {'epub': 1, 'mobi': 2, 'txt': 3}
+            sorted_items = sorted(items, key=lambda x: fmt_order.get(x.get('format', ''), 99))
+
+            fmt_links = []
+            for item in sorted_items:
+                fmt_name = item.get('format', '').upper()
+                raw_path = item.get('path', '')
+                escaped_path = raw_path.replace(' ', '%20')
+                fmt_links.append(f"[`{fmt_name}`]({escaped_path})")
+            fmt_str = " · ".join(fmt_links)
+
+            reader_id = sorted_items[0].get('id', '')
+            reader_link = f"[📖 在线阅读](https://zhipingyang.github.io/open-cloud-bookshelf/reader.html?id={reader_id})"
+
+            lines.append(f"| **{safe_title}** | {safe_author} | {fmt_str} | {reader_link} |")
+
+        lines.append("")
+        lines.append("</details>")
+        lines.append("")
+
+    lines.append("---")
+    lines.append("")
+    lines.append("👉 [**返回主页 README.md**](README.md) | [**在线进入藏书阁**](https://zhipingyang.github.io/open-cloud-bookshelf/)")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
 def scan_books(rebuild=False, check_only=False):
     existing_catalog = {} if rebuild else load_existing_catalog()
     books = []
@@ -939,8 +1043,21 @@ def scan_books(rebuild=False, check_only=False):
         with open(COMPACT_SVG_PATH, 'r', encoding='utf-8') as f:
             if f.read().strip() != expected_compact_svg.strip():
                 compact_svg_changed = True
-    else:
+    if compact_svg_changed or not os.path.exists(COMPACT_SVG_PATH):
         compact_svg_changed = True
+
+    # 6. Compare CATALOG.md
+    catalog_md_changed = False
+    expected_catalog_md = generate_catalog_markdown(catalog)
+    if os.path.exists(CATALOG_MD_PATH):
+        try:
+            with open(CATALOG_MD_PATH, 'r', encoding='utf-8') as f:
+                if f.read().strip() != expected_catalog_md.strip():
+                    catalog_md_changed = True
+        except OSError:
+            catalog_md_changed = True
+    else:
+        catalog_md_changed = True
 
     # Handle check mode
     if check_only:
@@ -955,6 +1072,8 @@ def scan_books(rebuild=False, check_only=False):
             mismatches.append(f"{os.path.relpath(STATS_SVG_PATH, REPO_ROOT)} is out of date or missing")
         if compact_svg_changed:
             mismatches.append(f"{os.path.relpath(COMPACT_SVG_PATH, REPO_ROOT)} is out of date or missing")
+        if catalog_md_changed:
+            mismatches.append(f"{os.path.relpath(CATALOG_MD_PATH, REPO_ROOT)} is out of date or missing")
 
         if mismatches:
             print("❌ The following artifacts are out of sync:")
@@ -963,7 +1082,7 @@ def scan_books(rebuild=False, check_only=False):
             print("\n👉 Run 'python3 scripts/update_books.py' or 'make catalog' to synchronize all artifacts.")
             return False
         else:
-            print("✅ All artifacts (books.json, meta.json, badges, SVG dashboard/compact) are synchronized!")
+            print("✅ All artifacts (books.json, meta.json, CATALOG.md, badges, SVG dashboard/compact) are synchronized!")
             return True
 
     # Write Mode: Update all out-of-date artifacts
@@ -1016,6 +1135,16 @@ def scan_books(rebuild=False, check_only=False):
         print(f"🎨 Generated {os.path.relpath(COMPACT_SVG_PATH, REPO_ROOT)}")
     else:
         print(f"✅ {os.path.relpath(COMPACT_SVG_PATH, REPO_ROOT)} is already up to date")
+
+    # 5. CATALOG.md
+    if catalog_md_changed or not os.path.exists(CATALOG_MD_PATH):
+        temp_md = f"{CATALOG_MD_PATH}.tmp"
+        with open(temp_md, 'w', encoding='utf-8') as f:
+            f.write(expected_catalog_md)
+        os.replace(temp_md, CATALOG_MD_PATH)
+        print(f"✨ Updated {os.path.relpath(CATALOG_MD_PATH, REPO_ROOT)}")
+    else:
+        print(f"✅ {os.path.relpath(CATALOG_MD_PATH, REPO_ROOT)} is already up to date")
 
     elapsed = time.time() - start_time
     print(f"\n🚀 Pipeline complete in {elapsed:.2f}s!")

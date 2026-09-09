@@ -25,6 +25,10 @@
   <a href="https://zhipingyang.github.io/open-cloud-bookshelf/bookshelf.html">
     <img src="https://img.shields.io/badge/⭐_我的书房-独立书架-059669?style=for-the-badge" alt="独立书架">
   </a>
+  &nbsp;&nbsp;
+  <a href="CATALOG.md">
+    <img src="https://img.shields.io/badge/📖_馆藏总目-全量书单-f59e0b?style=for-the-badge" alt="馆藏总目">
+  </a>
 </p>
 
 </div>

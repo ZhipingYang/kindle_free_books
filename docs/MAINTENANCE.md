@@ -1,6 +1,6 @@
 # 书籍新增与网站更新流程
 
-本文是日常维护的唯一操作手册。正常新增书籍只使用 `update_books.py` 和 `audit_library.py`，不要手工编辑 `books.json`。
+本文是日常维护的唯一操作手册。正常新增书籍只使用 `update_books.py` 和 `audit_library.py`，不要手工编辑 `books.json` 和 `CATALOG.md`。
 
 ## 1. 准备书籍
 
@@ -19,7 +19,13 @@
 make catalog
 ```
 
-它会扫描 `books/`，复用未变化文件的元数据，只解析新增或变化的文件，并一键自动更新 `books.json`、`meta.json` 以及全套自适应矢量资产（`assets/badges/` 徽标、`assets/images/library-stats.svg` 全景看板、`assets/images/library-compact.svg` 紧凑横幅）。**`README.md` 与 `index.html` 已彻底解耦，增删书籍时永远无需改动文档与页面源码**。如果内容没有变化，脚本不会重写任何文件，保证纯幂等与零无效 Git diff。
+它会扫描 `books/`，复用未变化文件的元数据，只解析新增或变化的文件，并一键自动更新以下所有产物：
+
+- `books.json`、`meta.json`：机器可读的结构化图书索引；
+- `CATALOG.md`：面向 GitHub 访客的全量可折叠、可检索书目清单（按门类分组，每行含下载链接与在线阅读直达链接）；
+- `assets/badges/` 徽标与 `assets/images/` SVG 全景看板。
+
+**`README.md` 与 `index.html` 已彻底解耦，增删书籍时永远无需改动文档与页面源码**。如果内容没有变化，脚本不会重写任何文件，保证纯幂等与零无效 Git diff。
 
 只有修改了元数据解析或清洗规则时，才执行完整重建：
 
@@ -67,7 +73,7 @@ make serve
 ## 5. 提交与发布
 
 ```bash
-git add books books.json meta.json assets/badges assets/images
+git add books books.json meta.json CATALOG.md assets/badges assets/images
 git commit -m "books: add <书名或批次说明>"
 git push origin master
 ```
