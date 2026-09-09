@@ -1,6 +1,6 @@
 # 📚 Kindle 藏书阁 (Kindle Free Books)
 
-[![Books](https://img.shields.io/badge/资源-699%20个-blue.svg)](https://zhipingyang.github.io/kindle_free_books/)
+[![Books](https://img.shields.io/badge/资源-711%20个-blue.svg)](https://zhipingyang.github.io/kindle_free_books/)
 [![Format](https://img.shields.io/badge/格式-MOBI%20%7C%20EPUB%20%7C%20TXT-brightgreen.svg)](https://zhipingyang.github.io/kindle_free_books/)
 [![Reader](https://img.shields.io/badge/在线阅读-MOBI%20%2B%20EPUB%20%2B%20TXT-ff69b4.svg)](https://zhipingyang.github.io/kindle_free_books/)
 [![Offline](https://img.shields.io/badge/离线缓存-IndexedDB%20%2B%20Storage-orange.svg)](https://zhipingyang.github.io/kindle_free_books/)
@@ -42,7 +42,7 @@
 
 ## 🗂 馆藏门类分布统计
 
-全库现收录 **699 个资源文件**，聚合为 **650 部独立作品**（MOBI: 611 个, EPUB: 78 个, TXT: 10 个），总数据体积约 1.07 GB：
+全库现收录 **711 个资源文件**，聚合为 **661 部独立作品**（MOBI: 611 个, EPUB: 78 个, TXT: 22 个），总数据体积约 1.21 GB：
 
 | 分类门类 | 数量 | 格式分布 | 代表作品 / 作者 |
 | :--- | :--- | :--- | :--- |
@@ -55,7 +55,7 @@
 | **学习资料** | **32 本** | MOBI / EPUB | 《营销管理》、《定位》、英语词汇、逻辑思维与工具参考手册 |
 | **二十四史** | **25 本** | MOBI / EPUB | 司马迁《史记》、班固《汉书》至张廷玉《明史》全 24 部纪传体正史典籍 + 二十四史全集 EPUB 精装版 |
 | **哲学宗教** | **13 本** | MOBI / TXT | 《中国哲学简史》、《西方哲学史》、《道德经》、《庄子》、《南怀瑾系列讲座》等 |
-| **网络小说** | **12 本** | MOBI / EPUB / TXT | 《诡秘之主》、《玄鉴仙族》、《七夜雪》、《诛仙》、《佣兵天下》、《九州缥缈录》、《人间》等经典作品 |
+| **网络小说** | **24 本** | MOBI / EPUB / TXT | 《全职高手》、《魔道祖师》、《放开那个女巫》、《十日终焉》、《赤心巡天》、《诡秘之主》、《玄鉴仙族》、《斩神》、《宿命之环》等 |
 
 ---
 
