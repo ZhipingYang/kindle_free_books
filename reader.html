@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#fcfbfa" id="reader-theme-color-meta">
+  <title>在线阅读器 · Kindle Free Books</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+  <script>
+    (function() {
+      try {
+        var s = JSON.parse(localStorage.getItem('kfb_reader_settings') || '{}');
+        var colors = { paper: '#fcfbfa', sepia: '#f6eedb', dark: '#1c1c22', black: '#000000' };
+        var t = s.theme || 'paper';
+        var c = colors[t] || '#fcfbfa';
+        document.documentElement.setAttribute('data-reader-theme', t);
+        document.documentElement.style.backgroundColor = c;
+        document.documentElement.style.setProperty('--r-bg', c);
+        document.documentElement.style.setProperty('--r-bar-bg', c);
+        var meta = document.getElementById('reader-theme-color-meta');
+        if (meta) meta.setAttribute('content', c);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/css/reader.css?v=20260909">
+  <style>
+    /* Standalone page body reset */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100vh;
+      height: -webkit-fill-available;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: var(--r-bg, #fcfbfa);
+      color: var(--r-text, #262626);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+  </style>
+</head>
+<body class="reader-standalone">
+  <script>
+    (function() {
+      try {
+        var s = JSON.parse(localStorage.getItem('kfb_reader_settings') || '{}');
+        var colors = { paper: '#fcfbfa', sepia: '#f6eedb', dark: '#1c1c22', black: '#000000' };
+        var t = s.theme || 'paper';
+        var c = colors[t] || '#fcfbfa';
+        document.body.setAttribute('data-reader-theme', t);
+        document.body.style.backgroundColor = c;
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Reader Main Overlay (Standalone Flex Container) -->
+  <div id="reader-overlay" class="active" data-reader-font="serif">
+    <!-- Top Progress Indicator Line -->
+    <div id="reader-top-progress" class="reader-top-progress" style="width: 0%;"></div>
+    <!-- Shared Backdrop for TOC & Settings -->
+    <div id="reader-backdrop" class="reader-backdrop"></div>
+    <!-- Top Bar -->
+    <header id="reader-top-bar" class="reader-bar">
+      <div class="reader-header-left">
+        <button id="reader-exit-btn" class="reader-exit-btn" title="返回书库 (Esc)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span id="reader-exit-text">返回</span>
+        </button>
+      </div>
+      
+      <div class="reader-header-center" id="reader-book-title">正在载入图书...</div>
+      
+      <div class="reader-header-right">
+        <button id="reader-info-btn" class="reader-btn" title="图书详情与简介 (I)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </button>
+        <button id="reader-fullscreen-btn" class="reader-btn" title="切换全屏 (F)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+        </button>
+        <button id="reader-fav-btn" class="reader-btn" title="加入收藏">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </button>
+        <button id="reader-cache-btn" class="reader-btn" title="离线缓存">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </button>
+        <button id="reader-toc-btn" class="reader-btn" title="目录 (T)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <button id="reader-settings-btn" class="reader-btn" title="阅读设置 (S)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Reading Content Area (Self-contained scroll container) -->
+    <main id="reader-content-area" class="reader-content-area">
+      <div id="reader-chapter-content" class="reader-chapter-content">
+        <!-- Injected chapter content -->
+      </div>
+    </main>
+
+    <!-- Bottom Bar -->
+    <footer id="reader-bottom-bar" class="reader-bar">
+      <!-- Undo Accidental Jump Floating Chip -->
+      <div id="reader-undo-chip" class="reader-undo-chip" role="status" aria-live="polite">
+        <button id="reader-undo-btn" class="reader-undo-btn" type="button" title="点击返回原阅读进度">
+          <span class="undo-icon">↩</span>
+          <span class="undo-label">返回原进度:</span>
+          <span id="reader-undo-text" class="undo-text">章节名</span>
+        </button>
+        <button id="reader-undo-close" class="reader-undo-close" type="button" aria-label="关闭返回提示">✕</button>
+      </div>
+
+      <button id="reader-prev-chap" class="reader-nav-btn">‹ 上一节</button>
+      
+      <div class="reader-progress-wrap">
+        <!-- Live Scrub Follower Bubble -->
+        <div id="reader-scrub-bubble" class="reader-scrub-bubble" aria-hidden="true">
+          <div id="scrub-bubble-title" class="scrub-bubble-title">章节名</div>
+          <div id="scrub-bubble-sub" class="scrub-bubble-sub">第 1 / 1 节 · 0%</div>
+        </div>
+
+        <input type="range" id="reader-chap-slider" class="reader-slider" min="0" max="100" value="0" aria-label="章节进度滑动条">
+        <div class="reader-progress-info">
+          <span id="reader-chapter-title" class="reader-chapter-title">章节名</span>
+          <span class="reader-progress-dot">·</span>
+          <span id="reader-progress-text" class="reader-progress-text">第 1 / 1 节 · 0%</span>
+        </div>
+      </div>
+
+      <button id="reader-next-chap" class="reader-nav-btn">下一节 ›</button>
+    </footer>
+
+    <!-- TOC Drawer -->
+    <aside id="reader-toc-drawer" class="reader-drawer">
+      <div class="reader-drawer-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span>📑 章节目录</span>
+          <span id="reader-toc-count" class="reader-toc-count">共 0 节</span>
+        </div>
+        <button id="reader-toc-close" class="reader-btn" title="关闭目录">✕</button>
+      </div>
+      <div class="reader-toc-search-wrap">
+        <svg class="toc-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="reader-toc-search" class="reader-toc-search-input" placeholder="搜索章节名称..." autocomplete="off">
+        <button id="reader-toc-search-clear" class="toc-clear-btn" style="display: none;">✕</button>
+      </div>
+      <div id="reader-toc-list" class="reader-toc-list"></div>
+    </aside>
+
+    <!-- Settings Popover Panel -->
+    <div id="reader-settings-panel" class="reader-settings-panel">
+      <div class="sheet-handle"></div>
+      <div class="reader-settings-header">
+        <span style="font-weight: 700; font-size: 0.95rem;">🎨 视觉与排版设置</span>
+        <button id="reader-settings-close" class="reader-btn" style="padding: 0.2rem;" title="关闭">✕</button>
+      </div>
+
+      <div class="setting-section">
+        <span class="setting-label">阅读底色</span>
+        <div class="theme-options">
+          <button class="reader-theme-btn theme-btn-paper" data-theme="paper" title="浅白">羊皮纸</button>
+          <button class="reader-theme-btn theme-btn-sepia" data-theme="sepia" title="护眼暖黄">护眼</button>
+          <button class="reader-theme-btn theme-btn-dark" data-theme="dark" title="暗色">雅致灰</button>
+          <button class="reader-theme-btn theme-btn-black" data-theme="black" title="纯黑夜间">纯黑</button>
+        </div>
+      </div>
+
+      <div class="setting-section">
+        <span class="setting-label">阅读字体</span>
+        <select id="reader-font-family" class="setting-select">
+          <option value="serif">宋体 / 明体 (典雅墨香)</option>
+          <option value="sans">黑体 / 系统无衬线 (现代清晰)</option>
+          <option value="kaiti">楷体 (舒展国风)</option>
+        </select>
+      </div>
+
+      <div class="setting-section">
+        <span class="setting-label">字号大小</span>
+        <div class="font-size-row">
+          <button id="reader-font-size-dec" class="font-size-ctrl-btn" title="缩小字号">A -</button>
+          <span id="reader-font-size-val" class="font-size-val">18px</span>
+          <button id="reader-font-size-inc" class="font-size-ctrl-btn" title="放大字号">A +</button>
+        </div>
+      </div>
+
+      <div class="setting-section">
+        <span class="setting-label">行间距离</span>
+        <div class="setting-btn-group">
+          <button class="setting-chip reader-lh-btn" data-lh="1.6">紧凑</button>
+          <button class="setting-chip reader-lh-btn active" data-lh="1.8">适中</button>
+          <button class="setting-chip reader-lh-btn" data-lh="2.1">宽松</button>
+        </div>
+      </div>
+
+      <div class="setting-section">
+        <span class="setting-label">版心宽度</span>
+        <div class="setting-btn-group">
+          <button class="setting-chip reader-width-btn" data-width="680">窄版</button>
+          <button class="setting-chip reader-width-btn active" data-width="820">标准</button>
+          <button class="setting-chip reader-width-btn" data-width="980">宽幅</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Book Details / Info Modal -->
+    <div id="reader-info-modal" class="reader-modal-overlay">
+      <div class="reader-modal-card">
+        <div class="reader-modal-header">
+          <span>📖 图书元数据与简介</span>
+          <button id="reader-info-close" class="reader-btn" title="关闭">✕</button>
+        </div>
+        <div id="reader-info-body" class="reader-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="reader-loading" class="reader-loading-overlay">
+      <div class="reader-spinner"></div>
+      <div id="reader-loading-text" style="font-weight: 600; font-size: 0.95rem;">正在加载图书数据...</div>
+      <div id="reader-loading-progress" style="font-size: 0.8rem; opacity: 0.8;"></div>
+    </div>
+  </div>
+
+  <!-- Reader Scripts -->
+  <script src="assets/js/config.js?v=20260909"></script>
+  <script src="assets/js/libs/jszip.min.js"></script>
+  <script src="assets/js/reader/db.js"></script>
+  <script src="assets/js/reader/storage.js"></script>
+  <script src="assets/js/reader/parser.js"></script>
+  <script src="assets/js/modules/store.js"></script>
+  <script src="assets/js/modules/ui.js"></script>
+  <script src="assets/js/reader/reader.js"></script>
+  <script src="assets/js/pages/reader.js?v=20260909"></script>
+</body>
+</html>
