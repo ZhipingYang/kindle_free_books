@@ -1006,6 +1006,12 @@ body.reader-active {
     overscroll-behavior-y: auto;
   }
 
+  /* The bottom scrubber already carries progress on phones. Keeping this
+     fixed line would leave a visible seam after every other control hides. */
+  .reader-top-progress {
+    display: none;
+  }
+
   #reader-top-bar {
     height: auto;
     min-height: 2.85rem;
@@ -1091,7 +1097,7 @@ body.reader-active {
     max-width: 110px;
   }
   #reader-content-area {
-    padding: max(3.4rem, calc(env(safe-area-inset-top, 0px) + 0.85rem)) 1.25rem max(3.2rem, calc(env(safe-area-inset-bottom, 0px) + 1.25rem));
+    padding: calc(env(safe-area-inset-top, 0px) + 4.25rem) max(1.25rem, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 5rem) max(1.25rem, env(safe-area-inset-left, 0px));
   }
   .reader-chapter-heading {
     font-size: 1.35em;

@@ -72,6 +72,8 @@ FAMOUS_AUTHORS_MAP = {
     '当我谈跑步时，我谈些什么': '村上春树',
     '乔布斯传': '沃尔特·艾萨克森',
     '曾国藩家书': '曾国藩',
+    '诡秘之主': '爱潜水的乌贼',
+    '玄鉴仙族': '季越人',
 }
 
 KNOWN_SUBDIR_AUTHORS = {
@@ -221,6 +223,15 @@ def parse_txt(path):
                     text = raw.decode(enc)
                     meta['excerpt'] = clean_text_excerpt(text, 300)
                     break
+                except UnicodeDecodeError:
+                    # If it failed only due to trailing incomplete multibyte character, try with ignore
+                    try:
+                        text = raw.decode(enc, errors='ignore')
+                        if len(text.strip()) > 10:
+                            meta['excerpt'] = clean_text_excerpt(text, 300)
+                            break
+                    except Exception:
+                        continue
                 except Exception:
                     continue
     except Exception:

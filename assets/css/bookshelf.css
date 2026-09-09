@@ -328,7 +328,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .bookshelf-hero {
     padding: 0.65rem 0 0.25rem;
     gap: 0.5rem;
@@ -345,7 +345,10 @@
     display: none;
   }
   .bookshelf-toolbar-wrap {
-    top: 6.55rem;
+    position: static;
+    top: auto;
+    z-index: auto;
+    background: transparent;
     padding: 0.45rem 0 0.5rem;
     margin-bottom: 0.35rem;
   }
