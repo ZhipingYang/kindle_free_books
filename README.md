@@ -1,26 +1,26 @@
 <div align="center">
 
-# 📚 Kindle 藏书阁 (Kindle Free Books)
+# 📚 云端开放书架 (Open Cloud Bookshelf)
 
-### 经典免费电子书典藏库 · 纯静态免插件在线阅读器 · 独立离线书房
+### 原 Kindle 藏书阁 · 经典免费电子书典藏库 · 纯静态免插件在线阅读器 · 独立离线书房
 
 <p align="center">
   精心整理的经典中文与世界名著免费数字典藏 · 100% 纯净重排格式 · 剔除一切扫描件与杂质文件
 </p>
 
-[![Books](https://img.shields.io/badge/全库资源-761%20本-2563eb?style=flat-square&logo=gitbook&logoColor=white)](https://zhipingyang.github.io/kindle_free_books/)
-[![Works](https://img.shields.io/badge/独立作品-710%20部-059669?style=flat-square&logo=bookmeter&logoColor=white)](https://zhipingyang.github.io/kindle_free_books/)
-[![Format](https://img.shields.io/badge/格式-MOBI%20%7C%20EPUB%20%7C%20TXT-d97706?style=flat-square)](https://zhipingyang.github.io/kindle_free_books/)
-[![Reader](https://img.shields.io/badge/在线阅读-免插件纯前端-7c3aed?style=flat-square&logo=safari&logoColor=white)](https://zhipingyang.github.io/kindle_free_books/)
-[![Offline](https://img.shields.io/badge/离线缓存-IndexedDB-0891b2?style=flat-square&logo=pwa&logoColor=white)](https://zhipingyang.github.io/kindle_free_books/)
-[![GitHub Pages](https://img.shields.io/badge/在线书房-GitHub%20Pages-475569?style=flat-square&logo=github&logoColor=white)](https://zhipingyang.github.io/kindle_free_books/)
+[![Books](https://img.shields.io/badge/全库资源-761%20本-2563eb?style=flat-square&logo=gitbook&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
+[![Works](https://img.shields.io/badge/独立作品-710%20部-059669?style=flat-square&logo=bookmeter&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
+[![Format](https://img.shields.io/badge/格式-MOBI%20%7C%20EPUB%20%7C%20TXT-d97706?style=flat-square)](https://zhipingyang.github.io/open-cloud-bookshelf/)
+[![Reader](https://img.shields.io/badge/在线阅读-免插件纯前端-7c3aed?style=flat-square&logo=safari&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
+[![Offline](https://img.shields.io/badge/离线缓存-IndexedDB-0891b2?style=flat-square&logo=pwa&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
+[![GitHub Pages](https://img.shields.io/badge/在线书房-GitHub%20Pages-475569?style=flat-square&logo=github&logoColor=white)](https://zhipingyang.github.io/open-cloud-bookshelf/)
 
 <p align="center">
-  <a href="https://zhipingyang.github.io/kindle_free_books/">
+  <a href="https://zhipingyang.github.io/open-cloud-bookshelf/">
     <img src="https://img.shields.io/badge/👉_立即访问-在线藏书阁-2563eb?style=for-the-badge" alt="藏书阁入口">
   </a>
   &nbsp;&nbsp;
-  <a href="https://zhipingyang.github.io/kindle_free_books/bookshelf.html">
+  <a href="https://zhipingyang.github.io/open-cloud-bookshelf/bookshelf.html">
     <img src="https://img.shields.io/badge/⭐_我的书房-独立书架-059669?style=for-the-badge" alt="独立书架">
   </a>
 </p>
@@ -120,8 +120,8 @@
 
 ```bash
 # 1. 克隆代码仓库
-git clone https://github.com/ZhipingYang/kindle_free_books.git
-cd kindle_free_books
+git clone https://github.com/ZhipingYang/open-cloud-bookshelf.git
+cd open-cloud-bookshelf
 
 # 2. 本地启动 HTTP 服务预览
 python3 -m http.server 8000

@@ -7,7 +7,7 @@
 推荐的最终结构：
 
 ```text
-kindle_free_books/        网站、阅读器、books.json、脚本、文档
+open-cloud-bookshelf/     网站、阅读器、books.json、脚本、文档
 object storage + CDN/     books/<分类>/<书名>.<格式>
 ```
 

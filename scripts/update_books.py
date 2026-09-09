@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-kindle_free_books: Automated Books Catalog Generator.
+open-cloud-bookshelf: Automated Books Catalog Generator.
 Scans the `books/` directory, extracts metadata (EPUB, MOBI, TXT),
 and generates a fresh `books.json` for the static website.
 
