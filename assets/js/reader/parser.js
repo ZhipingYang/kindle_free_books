@@ -247,14 +247,21 @@ const BookParser = {
     for (const line of lines) {
       const trimmed = line.trim();
       const match = trimmed.length <= 40 ? trimmed.match(chapterRegex) : null;
-      if (match && currentLines.length > 3) {
-        chapters.push({
-          title: currentTitle,
-          content: this.formatTxtLines(currentLines),
-          index: chapters.length
-        });
-        currentTitle = match[1].trim();
-        currentLines = [line];
+      if (match) {
+        const hasContent = currentLines.some(l => l.trim().length > 0);
+        if (!hasContent) {
+          // File started directly with chapter 1 title: adopt title without preamble chapter
+          currentTitle = match[1].trim();
+          currentLines = [];
+        } else {
+          chapters.push({
+            title: currentTitle,
+            content: this.formatTxtLines(currentLines),
+            index: chapters.length
+          });
+          currentTitle = match[1].trim();
+          currentLines = [];
+        }
       } else {
         currentLines.push(line);
       }

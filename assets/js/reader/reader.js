@@ -738,12 +738,19 @@ class ReaderApp {
 
     // Render HTML content with spacers to prevent toolbar text obstruction
     this.dom.chapterContentEl.innerHTML = `
-      <div class="reader-chapter-heading">${escapeHtml(chapter.title)}</div>
-      <div class="reader-chapter-body">${chapter.content}</div>
+      <div class="reader-chapter-heading" id="reader-current-heading">${escapeHtml(chapter.title)}</div>
+      <div class="reader-chapter-body" id="reader-current-body">${chapter.content}</div>
       <div class="reader-chapter-end-spacer"></div>
       ${inPageNavHtml}
       <div class="reader-chapter-end-spacer"></div>
     `;
+
+    // Deduplicate any repeated in-body chapter title heading
+    const currentBodyEl = document.getElementById('reader-current-body');
+    if (currentBodyEl) {
+      this.deduplicateChapterHeadings(chapter, currentBodyEl, index);
+      chapter.content = currentBodyEl.innerHTML;
+    }
 
     // Bind in-page bottom navigation events
     const inpagePrev = document.getElementById('inpage-prev-btn');
@@ -784,6 +791,129 @@ class ReaderApp {
     }
 
     this.saveProgress();
+  }
+
+  /**
+   * Intelligently removes duplicate chapter title headings from the beginning of chapter body.
+   * Ensures that the standardized `.reader-chapter-heading` remains the single, elegant title
+   * while eliminating repetitive in-body <h1>-<h3> or title paragraphs.
+   */
+  deduplicateChapterHeadings(chapter, bodyEl, index) {
+    if (!chapter || !bodyEl) return;
+
+    const normalize = (str) => {
+      if (!str) return '';
+      return str.replace(/[\s\r\n\t\u3000\u00a0·\-—_~～:：,，.。!！?？"“”'‘’（）()【】\[\]<>]/g, '').toLowerCase();
+    };
+
+    let chapTitle = (chapter.title || '').trim();
+    let normTitle = normalize(chapTitle);
+
+    // Drill down into single wrapper divs/sections/articles if present
+    let container = bodyEl;
+    while (
+      container.children.length === 1 && 
+      container.firstElementChild &&
+      ['DIV', 'SECTION', 'ARTICLE', 'MAIN', 'HEADER'].includes(container.firstElementChild.tagName)
+    ) {
+      container = container.firstElementChild;
+    }
+
+    const children = Array.from(container.children);
+    let removedCount = 0;
+    let headingWasRemoved = false;
+
+    for (let i = 0; i < children.length; i++) {
+      if (removedCount >= 3) break;
+      const child = children[i];
+
+      // Never remove media or elements containing media
+      if (child.tagName === 'IMG' || child.querySelector('img, svg, picture, video, audio')) {
+        break;
+      }
+
+      // If a title heading was already removed, strip any immediate trailing separator line/spacer
+      if (headingWasRemoved && (child.tagName === 'HR' || child.classList.contains('divider') || child.classList.contains('separator'))) {
+        child.remove();
+        continue;
+      }
+
+      const text = (child.innerText || child.textContent || '').trim();
+      if (!text) {
+        // Empty element / spacer before heading can be safely removed
+        child.remove();
+        continue;
+      }
+
+      const normElem = normalize(text);
+      const tagName = child.tagName.toLowerCase();
+      const isHeadingTag = /^h[1-6]$/.test(tagName) || 
+                           child.classList.contains('title') || 
+                           child.classList.contains('chapter-title') ||
+                           child.classList.contains('chapter') ||
+                           child.classList.contains('heading') ||
+                           child.classList.contains('sgc-toc-title');
+      const isVolume = /^(?:第[0-9一二三四五六七八九十百千]+[卷部篇]|volume\s*\d+)/i.test(text);
+
+      let isDuplicate = false;
+
+      // Check if current chapter title is generic fallback (e.g. '第 1 节' or 'Chapter 1')
+      const isFallbackTitle = /^第\s*[0-9一二三四五六七八九十百千]+\s*节$/.test(chapTitle) ||
+                              /^chapter\s*\d+$/i.test(chapTitle);
+
+      if (isFallbackTitle && isHeadingTag && text.length <= 40) {
+        // Adopt the real title from the inner heading tag
+        chapTitle = text;
+        normTitle = normalize(chapTitle);
+        chapter.title = chapTitle;
+        const headingEl = document.getElementById('reader-current-heading');
+        if (headingEl) headingEl.textContent = chapTitle;
+        if (this.dom.chapterTitleEl) this.dom.chapterTitleEl.textContent = chapTitle;
+        const tocItemName = this.dom.tocList.querySelector(`.reader-toc-item[data-index="${index}"] .toc-name`);
+        if (tocItemName) tocItemName.textContent = chapTitle;
+        isDuplicate = true;
+      } else if (normElem === normTitle) {
+        isDuplicate = true;
+      } else if (isHeadingTag && normElem.length <= 50 && (normElem.includes(normTitle) || normTitle.includes(normElem))) {
+        isDuplicate = true;
+      } else if (normElem.length <= 40) {
+        if (normElem.startsWith(normTitle) && (normElem.length - normTitle.length <= 6)) {
+          isDuplicate = true;
+        } else if (normTitle.startsWith(normElem) && (normTitle.length - normElem.length <= 6)) {
+          isDuplicate = true;
+        } else if (normTitle.includes(normElem) && normElem.length >= 2 && (isHeadingTag || /^(?:第[0-9一二三四五六七八九十百千]+[章回节卷集部篇]|chapter\s*\d+)/i.test(text))) {
+          isDuplicate = true;
+        }
+      }
+
+      // Check multi-line text (e.g. subtitle / English title line separated by newline/br)
+      if (!isDuplicate && text.length <= 60) {
+        const lines = text.split(/[\r\n]+/);
+        if (lines.length > 1) {
+          const firstLineNorm = normalize(lines[0]);
+          if (firstLineNorm && (firstLineNorm === normTitle || Math.abs(firstLineNorm.length - normTitle.length) <= 4)) {
+            isDuplicate = true;
+          }
+        }
+      }
+
+      if (isDuplicate) {
+        child.remove();
+        removedCount++;
+        headingWasRemoved = true;
+      } else if (isHeadingTag || isVolume) {
+        // Volume header or subtitle that doesn't match this chapter's title:
+        // Keep it and check next element (in case next element is the duplicate chapter heading)
+        continue;
+      } else {
+        // Regular story text reached: stop checking
+        break;
+      }
+    }
+
+    if (container !== bodyEl && container.children.length === 0) {
+      container.remove();
+    }
   }
 
   nextChapter() {
