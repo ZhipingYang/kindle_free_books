@@ -144,13 +144,19 @@
   }
 
   function renderStats() {
-    if (dom.statTotalBooks) dom.statTotalBooks.textContent = state.meta.totalWorks || state.allBooks.length;
-    if (dom.statTotalSize) dom.statTotalSize.textContent = state.meta.totalSizeFormatted || '1.03 GB';
+    const totalWorks = state.meta.uniqueWorks || state.meta.totalWorks || state.allBooks.length;
+    if (dom.statTotalBooks) dom.statTotalBooks.textContent = totalWorks;
+    if (dom.statTotalSize) dom.statTotalSize.textContent = state.meta.totalSizeFormatted || '-';
     if (dom.statTotalCategories) {
       dom.statTotalCategories.textContent = Object.keys(state.meta.categories || {}).length;
     }
     const badge = document.getElementById('nav-book-badge');
-    if (badge) badge.textContent = `${state.allBooks.length} 部作品`;
+    if (badge) badge.textContent = `${totalWorks} 部作品`;
+
+    const footerSummary = document.getElementById('footer-catalog-summary');
+    if (footerSummary && state.meta.totalBooks) {
+      footerSummary.textContent = `全库共收录 ${state.meta.totalBooks} 个资源文件，聚合为 ${totalWorks} 部作品，支持全终端自适应检索、在线阅读与下载。`;
+    }
   }
 
   function renderRecentBooks() {

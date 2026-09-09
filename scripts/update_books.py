@@ -25,9 +25,11 @@ from collections import defaultdict
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 BOOKS_DIR = os.path.join(REPO_ROOT, 'books')
 CATALOG_PATH = os.path.join(REPO_ROOT, 'books.json')
-README_PATH = os.path.join(REPO_ROOT, 'README.md')
-INDEX_HTML_PATH = os.path.join(REPO_ROOT, 'index.html')
-STATS_SVG_PATH = os.path.join(REPO_ROOT, 'assets', 'images', 'library-stats.svg')
+META_PATH = os.path.join(REPO_ROOT, 'meta.json')
+BADGES_DIR = os.path.join(REPO_ROOT, 'assets', 'badges')
+IMAGES_DIR = os.path.join(REPO_ROOT, 'assets', 'images')
+STATS_SVG_PATH = os.path.join(IMAGES_DIR, 'library-stats.svg')
+COMPACT_SVG_PATH = os.path.join(IMAGES_DIR, 'library-compact.svg')
 
 # Palette for SVG visualization and category badges
 CATEGORY_PALETTE = [
@@ -482,96 +484,131 @@ def load_existing_catalog():
         print(f"Warning: Failed to load existing catalog: {e}")
         return {}
 
-def scan_books(rebuild=False, check_only=False):
-    existing_catalog = {} if rebuild else load_existing_catalog()
-    books = []
-    start_time = time.time()
+def text_width(text):
+    """Estimate visual pixel width for badge label and value rendering."""
+    w = 0.0
+    for char in text:
+        if '\u4e00' <= char <= '\u9fff' or '\u3000' <= char <= '\u303f':
+            w += 12.0
+        elif char in 'mwMW':
+            w += 8.5
+        elif char in 'ijl|: !.,I':
+            w += 4.5
+        else:
+            w += 7.0
+    return w
 
-    if not os.path.isdir(BOOKS_DIR):
-        print(f"Error: Books directory not found at {BOOKS_DIR}")
-        sys.exit(1)
 
-    added_count = 0
-    cached_count = 0
+def generate_badge_svg(label: str, value: str, color: str) -> str:
+    """Generate a clean, standalone flat-square SVG badge with crisp vector typography."""
+    pad = 7
+    label_w = round(text_width(label) + pad * 2)
+    val_w = round(text_width(value) + pad * 2)
+    tot_w = label_w + val_w
+    label_x = round(label_w / 2 * 10) / 10
+    val_x = round((label_w + val_w / 2) * 10) / 10
 
-    for root, dirs, files in os.walk(BOOKS_DIR):
-        dirs.sort()
-        for filename in sorted(files):
-            if filename.startswith('.'):
-                continue
-            ext = os.path.splitext(filename)[1].lower()
-            if ext not in SUPPORTED_EXTENSIONS:
-                continue
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{tot_w}" height="20" viewBox="0 0 {tot_w} 20" role="img" aria-label="{label}: {value}">
+  <title>{label}: {value}</title>
+  <linearGradient id="s" x2="0" y2="100%">
+    <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+    <stop offset="1" stop-opacity=".1"/>
+  </linearGradient>
+  <clipPath id="r">
+    <rect width="{tot_w}" height="20" rx="3" fill="#fff"/>
+  </clipPath>
+  <g clip-path="url(#r)">
+    <rect width="{label_w}" height="20" fill="#334155"/>
+    <rect x="{label_w}" width="{val_w}" height="20" fill="{color}"/>
+    <rect width="{tot_w}" height="20" fill="url(#s)"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',PingFang SC,sans-serif" text-rendering="geometricPrecision" font-size="11">
+    <text aria-hidden="true" x="{label_x}" y="15" fill="#010101" fill-opacity=".3">{label}</text>
+    <text x="{label_x}" y="14">{label}</text>
+    <text aria-hidden="true" x="{val_x}" y="15" fill="#010101" fill-opacity=".3">{value}</text>
+    <text x="{val_x}" y="14" font-weight="600">{value}</text>
+  </g>
+</svg>'''
 
-            full_path = os.path.join(root, filename)
-            rel_path = os.path.relpath(full_path, REPO_ROOT).replace('\\', '/')
-            size_bytes = os.path.getsize(full_path)
-            if size_bytes == 0:
-                print(f"Skipping empty 0KB file: {rel_path}")
-                continue
-            book_id = hashlib.md5(rel_path.encode('utf-8')).hexdigest()[:10]
 
-            # Path format: books/<category>/[<subCategory>/]<filename>
-            rel_parts = Path(rel_path).parts
-            category = rel_parts[1] if len(rel_parts) > 2 else '未分类'
-            sub_category = rel_parts[2] if len(rel_parts) > 3 else ''
-
-            # Check if we can reuse cached metadata
-            existing = existing_catalog.get(rel_path)
-            if existing and existing.get('size') == size_bytes and not rebuild:
-                entry = dict(existing)
-                entry['id'] = book_id
-                entry['path'] = rel_path
-                entry['category'] = category
-                entry['subCategory'] = sub_category
-                entry['size'] = size_bytes
-                entry['sizeFormatted'] = format_size(size_bytes)
-                books.append(entry)
-                cached_count += 1
-                continue
-
-            added_count += 1
-            filename_no_ext = os.path.splitext(filename)[0]
-            parsed_meta = {}
-            if ext == '.mobi':
-                parsed_meta = parse_mobi(full_path)
-            elif ext == '.epub':
-                parsed_meta = parse_epub(full_path)
-            elif ext == '.txt':
-                parsed_meta = parse_txt(full_path)
-
-            title, author = clean_title_and_author(filename_no_ext, category, sub_category, parsed_meta)
-            description = parsed_meta.get('description', '')
-            excerpt = parsed_meta.get('excerpt', '')
-            if not description and excerpt:
-                description = excerpt
-            if not description:
-                description = f"《{title}》是收录于{category}门类的经典读物，由 {author if author else '名家'} 所作，具有深厚的阅读与收藏价值。"
-
-            tags = generate_tags(title, author, category, sub_category)
-
-            books.append({
-                'id': book_id,
-                'title': title,
-                'originalName': filename_no_ext,
-                'author': author if author else '佚名',
-                'category': category,
-                'subCategory': sub_category,
-                'format': ext.lstrip('.'),
-                'size': size_bytes,
-                'sizeFormatted': format_size(size_bytes),
-                'path': rel_path,
-                'description': description[:400],
-                'excerpt': excerpt[:300] if excerpt else "",
-                'tags': tags
-            })
-
-def generate_stats_svg_content(catalog, date_str=None):
-    """Generate modern, responsive SVG stats card for README and documentation."""
+def generate_badges(catalog) -> dict:
+    """Generate a suite of standalone vector badges for README and documentation."""
     meta = catalog.get('meta', {})
     books = catalog.get('books', [])
     total_books = meta.get('totalBooks', len(books))
-    unique_works = len(set(b.get('title', '') for b in books)) if books else total_books
+    unique_works = meta.get('uniqueWorks', len(set(b.get('title', '') for b in books)))
+    total_size = meta.get('totalSizeFormatted', '0 B')
+    cat_count = len(meta.get('categories', {}))
+
+    return {
+        'badge-books.svg': generate_badge_svg('全库资源', f'{total_books} 本', '#2563eb'),
+        'badge-works.svg': generate_badge_svg('独立作品', f'{unique_works} 部', '#059669'),
+        'badge-size.svg': generate_badge_svg('馆藏容量', total_size, '#d97706'),
+        'badge-categories.svg': generate_badge_svg('精选门类', f'{cat_count} 大类', '#7c3aed'),
+        'badge-formats.svg': generate_badge_svg('格式', 'MOBI | EPUB | TXT', '#0891b2'),
+    }
+
+
+def generate_compact_svg_content(catalog) -> str:
+    """Generate a responsive horizontal summary banner widget (880x110)."""
+    meta = catalog.get('meta', {})
+    books = catalog.get('books', [])
+    total_books = meta.get('totalBooks', len(books))
+    unique_works = meta.get('uniqueWorks', len(set(b.get('title', '') for b in books)))
+    total_size = meta.get('totalSizeFormatted', '0 B')
+    categories = meta.get('categories', {})
+    sorted_cats = sorted(categories.items(), key=lambda x: x[1], reverse=True)
+
+    bar_rects = []
+    curr_x = 40.0
+    bar_total_w = 800.0
+    for idx, (cat, count) in enumerate(sorted_cats):
+        color = CATEGORY_PALETTE[idx % len(CATEGORY_PALETTE)]
+        w = round((count / total_books) * bar_total_w, 1) if total_books > 0 else 0
+        bar_rects.append(f'<rect x="{curr_x}" y="92" width="{w}" height="6" fill="{color}" rx="1" />')
+        curr_x += w
+    bar_svg = "".join(bar_rects)
+
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 110" width="100%" height="100%">
+  <style>
+    .bg {{ fill: #0f172a; stroke: #334155; stroke-width: 1px; }}
+    .unit-title {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; font-size: 11px; fill: #94a3b8; }}
+    .unit-val {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 24px; font-weight: 700; fill: #f8fafc; }}
+    @media (prefers-color-scheme: light) {{
+      .bg {{ fill: #ffffff; stroke: #e2e8f0; }}
+      .unit-title {{ fill: #64748b; }}
+      .unit-val {{ fill: #0f172a; }}
+    }}
+  </style>
+  <rect width="880" height="110" rx="12" class="bg" />
+  <g transform="translate(40, 24)">
+    <text class="unit-title">📚 全库资源文件</text>
+    <text y="36" class="unit-val">{total_books} <tspan font-size="13" font-weight="400" fill="#94a3b8">本</tspan></text>
+  </g>
+  <g transform="translate(260, 24)">
+    <text class="unit-title">📖 聚合独立作品</text>
+    <text y="36" class="unit-val">{unique_works} <tspan font-size="13" font-weight="400" fill="#94a3b8">部</tspan></text>
+  </g>
+  <g transform="translate(480, 24)">
+    <text class="unit-title">💾 馆藏纯净总容量</text>
+    <text y="36" class="unit-val">{total_size}</text>
+  </g>
+  <g transform="translate(700, 24)">
+    <text class="unit-title">🗂 精选细分门类</text>
+    <text y="36" class="unit-val">{len(categories)} <tspan font-size="13" font-weight="400" fill="#94a3b8">大类</tspan></text>
+  </g>
+  <g>
+    {bar_svg}
+  </g>
+</svg>'''
+
+
+def generate_stats_svg_content(catalog, date_str=None) -> str:
+    """Generate comprehensive responsive SVG stats dashboard card (880x320+)."""
+    meta = catalog.get('meta', {})
+    books = catalog.get('books', [])
+    total_books = meta.get('totalBooks', len(books))
+    unique_works = meta.get('uniqueWorks', len(set(b.get('title', '') for b in books)))
     total_size_str = meta.get('totalSizeFormatted', '0 B')
     formats = meta.get('formats', {})
     categories = meta.get('categories', {})
@@ -690,128 +727,6 @@ def generate_stats_svg_content(catalog, date_str=None):
     return svg
 
 
-def sync_readme_content(content, catalog):
-    """Synchronize badges, hero text, SVG embed, and category statistics table in README.md."""
-    meta = catalog.get('meta', {})
-    books = catalog.get('books', [])
-    total_books = meta.get('totalBooks', len(books))
-    unique_works = len(set(b.get('title', '') for b in books)) if books else total_books
-    total_size_str = meta.get('totalSizeFormatted', '0 B')
-    formats = meta.get('formats', {})
-    mobi_cnt = formats.get('mobi', 0)
-    epub_cnt = formats.get('epub', 0)
-    txt_cnt = formats.get('txt', 0)
-    categories = meta.get('categories', {})
-
-    cat_formats_map = defaultdict(set)
-    for b in books:
-        cat_formats_map[b.get('category', '')].add(b.get('format', '').lower())
-
-    # 1. Update shields badges
-    content = re.sub(
-        r'\[!\[Books\]\(https://img\.shields\.io/badge/全库资源-[^%-]+%20本-2563eb\?style=flat-square&logo=gitbook&logoColor=white\)\]',
-        f'[![Books](https://img.shields.io/badge/全库资源-{total_books}%20本-2563eb?style=flat-square&logo=gitbook&logoColor=white)]',
-        content
-    )
-    content = re.sub(
-        r'\[!\[Works\]\(https://img\.shields\.io/badge/独立作品-[^%-]+%20部-059669\?style=flat-square&logo=bookmeter&logoColor=white\)\]',
-        f'[![Works](https://img.shields.io/badge/独立作品-{unique_works}%20部-059669?style=flat-square&logo=bookmeter&logoColor=white)]',
-        content
-    )
-
-    # 2. Update feature highlights list
-    content = re.sub(
-        r'-\s+\*\*\d+\s*本优质馆藏\*\*：',
-        f'- **{total_books} 本优质馆藏**：',
-        content
-    )
-
-    # 3. Ensure SVG dashboard card is embedded under distribution heading
-    svg_embed = '<p align="center">\n  <img src="assets/images/library-stats.svg" alt="馆藏全景数据" width="100%">\n</p>'
-    if 'assets/images/library-stats.svg' not in content:
-        content = re.sub(
-            r'(## 🗂 馆藏门类分布统计\s*\n+)',
-            r'\1' + svg_embed + '\n\n',
-            content
-        )
-
-    # 4. Update summary paragraph
-    summary_pattern = r'全库现收录\s+\*\*\d+\s*个资源文件\*\*，聚合为\s+\*\*\d+\s*部独立作品\*\*（[^）]+），总数据体积约\s+\*\*[^*]+\*\*：'
-    summary_replacement = f'全库现收录 **{total_books} 个资源文件**，聚合为 **{unique_works} 部独立作品**（MOBI: {mobi_cnt} 个, EPUB: {epub_cnt} 个, TXT: {txt_cnt} 个），总数据体积约 **{total_size_str}**：'
-    content = re.sub(summary_pattern, summary_replacement, content)
-
-    # 5. Update category table rows
-    fmt_order = ['mobi', 'epub', 'txt']
-    for cat, count in categories.items():
-        cat_fmts = cat_formats_map.get(cat, set())
-        ordered_fmts = [f.upper() for f in fmt_order if f in cat_fmts]
-        for f in sorted(cat_fmts):
-            if f.upper() not in ordered_fmts:
-                ordered_fmts.append(f.upper())
-        fmt_str = ' / '.join(ordered_fmts) if ordered_fmts else 'MOBI'
-
-        pattern = rf'(\|\s*\*\*{re.escape(cat)}\*\*\s*\|\s*)\*\*\d+\s*本\*\*\s*\|\s*[^|]+\s*\|'
-        if re.search(pattern, content):
-            replacement = rf'\g<1>**{count} 本** | {fmt_str} |'
-            content = re.sub(pattern, replacement, content)
-        elif f'**{cat}**' not in content:
-            # If category is brand new, append before the end of table separator
-            new_row = f"| **{cat}** | **{count} 本** | {fmt_str} | 经典读物精选收录 |"
-            content = re.sub(
-                r'(\|\s*\*\*哲学宗教\*\*[^\n]+\n)',
-                rf'\g<1>{new_row}\n',
-                content
-            )
-
-    return content
-
-
-def sync_index_html_content(content, catalog):
-    """Synchronize meta description, nav badge, and hero stats in index.html."""
-    meta = catalog.get('meta', {})
-    books = catalog.get('books', [])
-    total_books = meta.get('totalBooks', len(books))
-    unique_works = len(set(b.get('title', '') for b in books)) if books else total_books
-    total_size_str = meta.get('totalSizeFormatted', '0 B')
-    cat_count = len(meta.get('categories', {}))
-
-    # Meta description
-    content = re.sub(
-        r'(<meta\s+name="description"\s+content="[^"]*?)\d+\s*部作品[、,]\s*\d+\s*个电子书资源',
-        rf'\g<1>{unique_works} 部作品、{total_books} 个电子书资源',
-        content
-    )
-    # Nav badge
-    content = re.sub(
-        r'(id="nav-book-badge"[^>]*>)\s*\d+\s*部作品\s*(</span>)',
-        rf'\g<1>{unique_works} 部作品\g<2>',
-        content
-    )
-    # Hero stats
-    content = re.sub(
-        r'(id="stat-total-books"[^>]*>)\s*\d+\s*(</span>)',
-        rf'\g<1>{unique_works}\g<2>',
-        content
-    )
-    content = re.sub(
-        r'(id="stat-total-categories"[^>]*>)\s*\d+\s*(</span>)',
-        rf'\g<1>{cat_count}\g<2>',
-        content
-    )
-    content = re.sub(
-        r'(id="stat-total-size"[^>]*>)\s*[^<]+\s*(</span>)',
-        rf'\g<1>{total_size_str}\g<2>',
-        content
-    )
-    # Footer
-    content = re.sub(
-        r'全库共收录\s+\d+\s*个资源文件[，,]\s*聚合为\s+\d+\s*部作品',
-        rf'全库共收录 {total_books} 个资源文件，聚合为 {unique_works} 部作品',
-        content
-    )
-    return content
-
-
 def scan_books(rebuild=False, check_only=False):
     existing_catalog = {} if rebuild else load_existing_catalog()
     books = []
@@ -856,6 +771,8 @@ def scan_books(rebuild=False, check_only=False):
                 entry['subCategory'] = sub_category
                 entry['size'] = size_bytes
                 entry['sizeFormatted'] = format_size(size_bytes)
+                if entry.get('excerpt') == entry.get('description'):
+                    entry['excerpt'] = ""
                 books.append(entry)
                 cached_count += 1
                 continue
@@ -879,6 +796,8 @@ def scan_books(rebuild=False, check_only=False):
                 description = f"《{title}》是收录于{category}门类的经典读物，由 {author if author else '名家'} 所作，具有深厚的阅读与收藏价值。"
 
             tags = generate_tags(title, author, category, sub_category)
+            clean_desc = description[:400]
+            clean_excerpt = excerpt[:300] if (excerpt and excerpt != description) else ""
 
             books.append({
                 'id': book_id,
@@ -891,8 +810,8 @@ def scan_books(rebuild=False, check_only=False):
                 'size': size_bytes,
                 'sizeFormatted': format_size(size_bytes),
                 'path': rel_path,
-                'description': description[:400],
-                'excerpt': excerpt[:300] if excerpt else "",
+                'description': clean_desc,
+                'excerpt': clean_excerpt,
                 'tags': tags
             })
 
@@ -902,6 +821,7 @@ def scan_books(rebuild=False, check_only=False):
     formats = {}
     tags_count = {}
     total_size = sum(b['size'] for b in books)
+    unique_works = len(set(b['title'] for b in books))
 
     for b in books:
         cat = b['category']
@@ -916,6 +836,7 @@ def scan_books(rebuild=False, check_only=False):
     catalog = {
         'meta': {
             'totalBooks': len(books),
+            'uniqueWorks': unique_works,
             'totalSize': total_size,
             'totalSizeFormatted': format_size(total_size),
             'categories': categories,
@@ -944,64 +865,80 @@ def scan_books(rebuild=False, check_only=False):
             books_json_changed = False
             catalog['meta']['updatedAt'] = old_catalog.get('meta', {}).get('updatedAt', catalog['meta']['updatedAt'])
 
-    # 2. Compare SVG stats card
-    svg_changed = False
-    existing_svg = ""
-    existing_svg_date = None
+    # 2. Compare meta.json
+    old_meta = None
+    try:
+        with open(META_PATH, 'r', encoding='utf-8') as f:
+            old_meta = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        pass
+
+    meta_json_changed = True
+    if old_meta:
+        old_meta_comp = json.loads(json.dumps(old_meta, ensure_ascii=False))
+        new_meta_comp = json.loads(json.dumps(catalog['meta'], ensure_ascii=False))
+        old_meta_comp.pop('updatedAt', None)
+        new_meta_comp.pop('updatedAt', None)
+        if old_meta_comp == new_meta_comp:
+            meta_json_changed = False
+
+    # 3. Compare SVG badges
+    badges_dict = generate_badges(catalog)
+    badges_changed = False
+    for b_name, b_svg in badges_dict.items():
+        b_path = os.path.join(BADGES_DIR, b_name)
+        if not os.path.exists(b_path):
+            badges_changed = True
+            break
+        with open(b_path, 'r', encoding='utf-8') as f:
+            if f.read().strip() != b_svg.strip():
+                badges_changed = True
+                break
+
+    # 4. Compare library-stats.svg
+    stats_svg_changed = False
+    existing_stats_svg = ""
+    existing_stats_date = None
     if os.path.exists(STATS_SVG_PATH):
         try:
             with open(STATS_SVG_PATH, 'r', encoding='utf-8') as f:
-                existing_svg = f.read()
-            date_match = re.search(r'更新时间:\s*(\d{4}-\d{2}-\d{2})', existing_svg)
+                existing_stats_svg = f.read()
+            date_match = re.search(r'更新时间:\s*(\d{4}-\d{2}-\d{2})', existing_stats_svg)
             if date_match:
-                existing_svg_date = date_match.group(1)
+                existing_stats_date = date_match.group(1)
         except OSError:
             pass
     else:
-        svg_changed = True
+        stats_svg_changed = True
 
-    expected_svg_date = existing_svg_date if (not books_json_changed and existing_svg_date) else time.strftime('%Y-%m-%d')
-    expected_svg = generate_stats_svg_content(catalog, date_str=expected_svg_date)
-    if existing_svg.strip() != expected_svg.strip():
-        svg_changed = True
+    expected_stats_date = existing_stats_date if (not books_json_changed and existing_stats_date) else time.strftime('%Y-%m-%d')
+    expected_stats_svg = generate_stats_svg_content(catalog, date_str=expected_stats_date)
+    if existing_stats_svg.strip() != expected_stats_svg.strip():
+        stats_svg_changed = True
 
-    # 3. Compare README.md
-    readme_changed = False
-    existing_readme = ""
-    expected_readme = ""
-    if os.path.exists(README_PATH):
-        with open(README_PATH, 'r', encoding='utf-8') as f:
-            existing_readme = f.read()
-        expected_readme = sync_readme_content(existing_readme, catalog)
-        if existing_readme != expected_readme:
-            readme_changed = True
+    # 5. Compare library-compact.svg
+    compact_svg_changed = False
+    expected_compact_svg = generate_compact_svg_content(catalog)
+    if os.path.exists(COMPACT_SVG_PATH):
+        with open(COMPACT_SVG_PATH, 'r', encoding='utf-8') as f:
+            if f.read().strip() != expected_compact_svg.strip():
+                compact_svg_changed = True
     else:
-        readme_changed = True
-
-    # 4. Compare index.html
-    html_changed = False
-    existing_html = ""
-    expected_html = ""
-    if os.path.exists(INDEX_HTML_PATH):
-        with open(INDEX_HTML_PATH, 'r', encoding='utf-8') as f:
-            existing_html = f.read()
-        expected_html = sync_index_html_content(existing_html, catalog)
-        if existing_html != expected_html:
-            html_changed = True
-    else:
-        html_changed = True
+        compact_svg_changed = True
 
     # Handle check mode
     if check_only:
         mismatches = []
         if books_json_changed:
             mismatches.append(f"{os.path.relpath(CATALOG_PATH, REPO_ROOT)} is out of date")
-        if svg_changed:
+        if meta_json_changed:
+            mismatches.append(f"{os.path.relpath(META_PATH, REPO_ROOT)} is out of date")
+        if badges_changed:
+            mismatches.append(f"{os.path.relpath(BADGES_DIR, REPO_ROOT)}/*.svg badges are out of date or missing")
+        if stats_svg_changed:
             mismatches.append(f"{os.path.relpath(STATS_SVG_PATH, REPO_ROOT)} is out of date or missing")
-        if readme_changed:
-            mismatches.append(f"{os.path.relpath(README_PATH, REPO_ROOT)} is out of date")
-        if html_changed:
-            mismatches.append(f"{os.path.relpath(INDEX_HTML_PATH, REPO_ROOT)} is out of date")
+        if compact_svg_changed:
+            mismatches.append(f"{os.path.relpath(COMPACT_SVG_PATH, REPO_ROOT)} is out of date or missing")
 
         if mismatches:
             print("❌ The following artifacts are out of sync:")
@@ -1010,10 +947,11 @@ def scan_books(rebuild=False, check_only=False):
             print("\n👉 Run 'python3 scripts/update_books.py' or 'make catalog' to synchronize all artifacts.")
             return False
         else:
-            print("✅ All artifacts (books.json, library-stats.svg, README.md, index.html) are synchronized!")
+            print("✅ All artifacts (books.json, meta.json, badges, SVG dashboard/compact) are synchronized!")
             return True
 
     # Write Mode: Update all out-of-date artifacts
+    # 1. books.json
     if books_json_changed or not os.path.exists(CATALOG_PATH):
         temp_path = f"{CATALOG_PATH}.tmp"
         with open(temp_path, 'w', encoding='utf-8') as f:
@@ -1024,32 +962,49 @@ def scan_books(rebuild=False, check_only=False):
     else:
         print(f"✅ {os.path.relpath(CATALOG_PATH, REPO_ROOT)} is already up to date")
 
-    if svg_changed or not os.path.exists(STATS_SVG_PATH):
-        os.makedirs(os.path.dirname(STATS_SVG_PATH), exist_ok=True)
-        final_svg = generate_stats_svg_content(catalog, date_str=time.strftime('%Y-%m-%d'))
+    # 2. meta.json
+    if meta_json_changed or not os.path.exists(META_PATH):
+        temp_meta = f"{META_PATH}.tmp"
+        with open(temp_meta, 'w', encoding='utf-8') as f:
+            json.dump(catalog['meta'], f, ensure_ascii=False, indent=2)
+            f.write('\n')
+        os.replace(temp_meta, META_PATH)
+        print(f"✨ Updated {os.path.relpath(META_PATH, REPO_ROOT)}")
+    else:
+        print(f"✅ {os.path.relpath(META_PATH, REPO_ROOT)} is already up to date")
+
+    # 3. Badges suite
+    os.makedirs(BADGES_DIR, exist_ok=True)
+    if badges_changed:
+        for b_name, b_svg in badges_dict.items():
+            b_path = os.path.join(BADGES_DIR, b_name)
+            with open(b_path, 'w', encoding='utf-8') as f:
+                f.write(b_svg)
+        print(f"🎨 Generated {len(badges_dict)} SVG badges in {os.path.relpath(BADGES_DIR, REPO_ROOT)}")
+    else:
+        print(f"✅ Badges in {os.path.relpath(BADGES_DIR, REPO_ROOT)} are already up to date")
+
+    # 4. library-stats.svg & library-compact.svg
+    os.makedirs(IMAGES_DIR, exist_ok=True)
+    if stats_svg_changed or not os.path.exists(STATS_SVG_PATH):
+        final_stats_svg = generate_stats_svg_content(catalog, date_str=time.strftime('%Y-%m-%d'))
         with open(STATS_SVG_PATH, 'w', encoding='utf-8') as f:
-            f.write(final_svg)
+            f.write(final_stats_svg)
         print(f"🎨 Generated {os.path.relpath(STATS_SVG_PATH, REPO_ROOT)}")
     else:
         print(f"✅ {os.path.relpath(STATS_SVG_PATH, REPO_ROOT)} is already up to date")
 
-    if readme_changed:
-        with open(README_PATH, 'w', encoding='utf-8') as f:
-            f.write(expected_readme)
-        print(f"📝 Synchronized {os.path.relpath(README_PATH, REPO_ROOT)}")
+    if compact_svg_changed or not os.path.exists(COMPACT_SVG_PATH):
+        with open(COMPACT_SVG_PATH, 'w', encoding='utf-8') as f:
+            f.write(expected_compact_svg)
+        print(f"🎨 Generated {os.path.relpath(COMPACT_SVG_PATH, REPO_ROOT)}")
     else:
-        print(f"✅ {os.path.relpath(README_PATH, REPO_ROOT)} is already up to date")
-
-    if html_changed:
-        with open(INDEX_HTML_PATH, 'w', encoding='utf-8') as f:
-            f.write(expected_html)
-        print(f"🌐 Synchronized {os.path.relpath(INDEX_HTML_PATH, REPO_ROOT)}")
-    else:
-        print(f"✅ {os.path.relpath(INDEX_HTML_PATH, REPO_ROOT)} is already up to date")
+        print(f"✅ {os.path.relpath(COMPACT_SVG_PATH, REPO_ROOT)} is already up to date")
 
     elapsed = time.time() - start_time
     print(f"\n🚀 Pipeline complete in {elapsed:.2f}s!")
     print(f"📚 Total books: {len(books)} (cached: {cached_count}, newly processed: {added_count})")
+    print(f"📖 Unique works: {unique_works}")
     print(f"📦 Total size: {format_size(total_size)}")
     print(f"📂 Categories: {len(categories)} categories")
     print(f"📄 Formats: {formats}")

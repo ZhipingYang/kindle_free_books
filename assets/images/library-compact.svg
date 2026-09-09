@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 110" width="100%" height="100%">
+  <style>
+    .bg { fill: #0f172a; stroke: #334155; stroke-width: 1px; }
+    .unit-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; font-size: 11px; fill: #94a3b8; }
+    .unit-val { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 24px; font-weight: 700; fill: #f8fafc; }
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #ffffff; stroke: #e2e8f0; }
+      .unit-title { fill: #64748b; }
+      .unit-val { fill: #0f172a; }
+    }
+  </style>
+  <rect width="880" height="110" rx="12" class="bg" />
+  <g transform="translate(40, 24)">
+    <text class="unit-title">📚 全库资源文件</text>
+    <text y="36" class="unit-val">842 <tspan font-size="13" font-weight="400" fill="#94a3b8">本</tspan></text>
+  </g>
+  <g transform="translate(260, 24)">
+    <text class="unit-title">📖 聚合独立作品</text>
+    <text y="36" class="unit-val">744 <tspan font-size="13" font-weight="400" fill="#94a3b8">部</tspan></text>
+  </g>
+  <g transform="translate(480, 24)">
+    <text class="unit-title">💾 馆藏纯净总容量</text>
+    <text y="36" class="unit-val">1.97 GB</text>
+  </g>
+  <g transform="translate(700, 24)">
+    <text class="unit-title">🗂 精选细分门类</text>
+    <text y="36" class="unit-val">10 <tspan font-size="13" font-weight="400" fill="#94a3b8">大类</tspan></text>
+  </g>
+  <g>
+    <rect x="40.0" y="92" width="239.4" height="6" fill="#3b82f6" rx="1" /><rect x="279.4" y="92" width="169.1" height="6" fill="#10b981" rx="1" /><rect x="448.5" y="92" width="84.6" height="6" fill="#f59e0b" rx="1" /><rect x="533.1" y="92" width="73.2" height="6" fill="#8b5cf6" rx="1" /><rect x="606.3000000000001" y="92" width="63.7" height="6" fill="#ec4899" rx="1" /><rect x="670.0000000000001" y="92" width="58.0" height="6" fill="#06b6d4" rx="1" /><rect x="728.0000000000001" y="92" width="39.9" height="6" fill="#d97706" rx="1" /><rect x="767.9000000000001" y="92" width="36.1" height="6" fill="#14b8a6" rx="1" /><rect x="804.0000000000001" y="92" width="23.8" height="6" fill="#e11d48" rx="1" /><rect x="827.8000000000001" y="92" width="12.4" height="6" fill="#6366f1" rx="1" />
+  </g>
+</svg>

@@ -19,7 +19,7 @@
 make catalog
 ```
 
-它会扫描 `books/`，复用未变化文件的元数据，只解析新增或变化的文件，并更新 `books.json`。如果内容没有变化，脚本不会重写文件或更新时间，避免无意义的 Git diff。
+它会扫描 `books/`，复用未变化文件的元数据，只解析新增或变化的文件，并一键自动更新 `books.json`、`meta.json` 以及全套自适应矢量资产（`assets/badges/` 徽标、`assets/images/library-stats.svg` 全景看板、`assets/images/library-compact.svg` 紧凑横幅）。**`README.md` 与 `index.html` 已彻底解耦，增删书籍时永远无需改动文档与页面源码**。如果内容没有变化，脚本不会重写任何文件，保证纯幂等与零无效 Git diff。
 
 只有修改了元数据解析或清洗规则时，才执行完整重建：
 
@@ -67,8 +67,7 @@ make serve
 ## 5. 提交与发布
 
 ```bash
-git add books books.json
-git add <本次修改的其他文件>
+git add books books.json meta.json assets/badges assets/images
 git commit -m "books: add <书名或批次说明>"
 git push origin master
 ```
